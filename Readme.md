@@ -8,6 +8,7 @@ FTP.Server, FTP.Client, FTP.Core là một project riêng trong solution
 - FTP.Server: Tập trung vào việc xử lý logic của server và giao diện người dùng của server. Nó sẽ tham chiếu đến FPT.Core.
 - FTP.Client: Tập trung vào việc xử lý logic của client và giao diện người dùng của client. Nó cũng sẽ tham chiếu đến FTP.Core.
 --> Dễ mở rông chức năng và sửa lỗi.
+  
 📁 FTP.Core/
 │
 ├── 📁 Models/                   # Chứa các lớp dữ liệu (Data Transfer Objects - DTOs)
