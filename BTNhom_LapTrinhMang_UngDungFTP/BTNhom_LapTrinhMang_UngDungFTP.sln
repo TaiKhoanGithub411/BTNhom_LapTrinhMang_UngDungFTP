@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.36422.26
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FTP.Server", "FTP.Server\FTP.Server.csproj", "{7D0BF222-6FB3-4F1F-8454-2F0E7E696E84}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FTP.Core", "FTP.Core\FTP.Core.csproj", "{BDA30DEB-6EE9-4912-96EC-4331F2BC7B05}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FTP.Client", "FTP.Client\FTP.Client.csproj", "{F26785CB-7724-4D42-AC2A-29581DF5B39F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7D0BF222-6FB3-4F1F-8454-2F0E7E696E84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D0BF222-6FB3-4F1F-8454-2F0E7E696E84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D0BF222-6FB3-4F1F-8454-2F0E7E696E84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D0BF222-6FB3-4F1F-8454-2F0E7E696E84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDA30DEB-6EE9-4912-96EC-4331F2BC7B05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDA30DEB-6EE9-4912-96EC-4331F2BC7B05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDA30DEB-6EE9-4912-96EC-4331F2BC7B05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDA30DEB-6EE9-4912-96EC-4331F2BC7B05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F26785CB-7724-4D42-AC2A-29581DF5B39F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F26785CB-7724-4D42-AC2A-29581DF5B39F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F26785CB-7724-4D42-AC2A-29581DF5B39F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F26785CB-7724-4D42-AC2A-29581DF5B39F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0835612D-FCA0-4FB9-AF6A-AEAC67DDCCA0}
+	EndGlobalSection
+EndGlobal
