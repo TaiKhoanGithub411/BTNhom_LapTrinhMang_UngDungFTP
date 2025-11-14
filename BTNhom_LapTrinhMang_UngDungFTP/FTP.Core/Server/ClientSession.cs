@@ -6,7 +6,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
+using FTP.Core.Protocol;
 
 namespace FTP.Core.Server
 {
@@ -18,6 +18,7 @@ namespace FTP.Core.Server
         private NetworkStream _controlStream;
         private StreamReader _reader;
         private StreamWriter _writer;
+        private readonly FtpCommandFactory _commandFactory;
 
         public string SessionId { get; private set; }//ID duy nhất cho session.
         public string ClientIPAddress { get; private set; }
@@ -32,6 +33,7 @@ namespace FTP.Core.Server
         {
             _controlClient = controlClient ?? throw new ArgumentNullException(nameof(controlClient));
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _commandFactory = new FtpCommandFactory();
 
             // Tạo SessionId ngắn (8 ký tự đầu của GUID)
             SessionId = Guid.NewGuid().ToString("N").Substring(0, 8);
@@ -107,10 +109,30 @@ namespace FTP.Core.Server
                     LastActivity = DateTime.Now;
                     LogMessage?.Invoke($"[{SessionId}] Received: {commandLine}");
 
-                    // TODO: Parse và xử lý command (sẽ implement sau)
-                    // Hiện tại chỉ trả về "Command not implemented"
-                    await SendResponseAsync(Constants.FtpConstants.CODE_COMMAND_NOT_IMPLEMENTED,
-                        "Command not implemented yet");
+                    // Parse command
+                    var parts = commandLine.Split(new[] { ' ' }, 2, StringSplitOptions.RemoveEmptyEntries);
+                    string commandName = parts[0];
+                    string arguments = parts.Length > 1 ? parts[1] : string.Empty;
+
+                    // Tạo và thực thi command
+                    var command = _commandFactory.CreateCommand(commandName);
+
+                    if (command != null)
+                    {
+                        try
+                        {
+                            await command.ExecuteAsync(this, arguments);
+                        }
+                        catch (Exception ex)
+                        {
+                            LogMessage?.Invoke($"[{SessionId}] Error executing {commandName}: {ex.Message}");
+                            await SendResponseAsync(451, "Requested action aborted: local error in processing");
+                        }
+                    }
+                    else
+                    {
+                        await SendResponseAsync(500, "Command not recognized");
+                    }
                 }
             }
             catch (IOException)

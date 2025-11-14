@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using FTP.Core.Server;
 using FTP.Core.Enum;
@@ -74,7 +68,7 @@ namespace FTP.Server
             }
 
             // Thêm message vào ListBox với timestamp
-            string logEntry = $"[{DateTime.Now:HH:mm:ss}] {message}";
+            string logEntry = $"[{DateTime.Now:HH:mm}] {message}";
             lsbLog.Items.Add(logEntry);
 
             // Auto-scroll xuống dưới cùng

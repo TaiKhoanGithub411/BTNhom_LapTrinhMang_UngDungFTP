@@ -42,6 +42,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants\FtpConstants.cs" />
+    <Compile Include="Protocol\Commands\Base\IFtpCommand.cs" />
+    <Compile Include="Protocol\Commands\PassCommand.cs" />
+    <Compile Include="Protocol\Commands\QuitCommand.cs" />
+    <Compile Include="Protocol\Commands\UserCommand.cs" />
+    <Compile Include="Protocol\FtpCommandFactory.cs" />
+    <Compile Include="Protocol\FtpResponse.cs" />
     <Compile Include="Server\ClientSession.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Enum\ClientStatus.cs" />
