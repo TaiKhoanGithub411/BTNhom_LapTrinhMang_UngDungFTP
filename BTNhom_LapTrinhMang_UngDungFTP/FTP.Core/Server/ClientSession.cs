@@ -19,7 +19,8 @@ namespace FTP.Core.Server
         private StreamReader _reader;
         private StreamWriter _writer;
         private readonly FtpCommandFactory _commandFactory;
-
+        private TcpClient _dataClient;
+        private NetworkStream _dataStream;
         public string SessionId { get; private set; }//ID duy nhất cho session.
         public string ClientIPAddress { get; private set; }
         public string Username { get; set; }
@@ -29,6 +30,8 @@ namespace FTP.Core.Server
         public bool IsAuthenticated { get; set; }//Client đã xác thực chưa.
         public string CurrentDirectory { get; set; }
         public event Action<string> LogMessage;//Event được phát ra khi có log message.
+        public TcpListener PassiveListener { get; set; } // Listener cho passive mode data connection.
+        public int PassivePort { get; set; }// Port được sử dụng cho passive mode.
         public ClientSession(TcpClient controlClient, ServerConfiguration configuration)// Khởi tạo ClientSession.
         {
             _controlClient = controlClient ?? throw new ArgumentNullException(nameof(controlClient));
@@ -59,7 +62,7 @@ namespace FTP.Core.Server
             try
             {
                 Status = ClientStatus.Disconnected;
-
+                CloseDataConnection();
                 _writer?.Close();
                 _reader?.Close();
                 _controlStream?.Close();
@@ -153,6 +156,93 @@ namespace FTP.Core.Server
             {
                 Close();
             }
+        }
+        public async Task<bool> SetupDataConnectionAsync() // Thiết lập data connection (chờ client kết nối vào passive port).
+        {
+            try
+            {
+                if (PassiveListener == null)
+                    return false;
+
+                // Chờ client kết nối với timeout 30 giây
+                var acceptTask = PassiveListener.AcceptTcpClientAsync();
+                var timeoutTask = Task.Delay(30000);
+                var completedTask = await Task.WhenAny(acceptTask, timeoutTask);
+                if (completedTask == acceptTask)
+                {
+                    _dataClient = await acceptTask;
+                    _dataStream = _dataClient.GetStream();
+                    return true;
+                }
+                else
+                {
+                    LogMessage?.Invoke($"[{SessionId}] Data connection timeout");
+                    return false;
+                }
+            }
+            catch(Exception ex)
+            {
+                LogMessage?.Invoke($"[{SessionId}] Error setting up data connection: {ex.Message}");
+                return false;
+            }
+        }
+        public void CloseDataConnection()// Đóng data connection.
+        {
+            try
+            {
+                _dataStream?.Close();
+                _dataClient?.Close();
+                PassiveListener?.Stop();
+
+                _dataStream = null;
+                _dataClient = null;
+                PassiveListener = null;
+            }
+            catch (Exception ex)
+            {
+                LogMessage?.Invoke($"[{SessionId}] Error closing data connection: {ex.Message}");
+            }
+        }
+        public async Task SendDataAsync(byte[] data)// Gửi dữ liệu qua data connection.
+        {
+            if(_dataStream != null && _dataStream.CanWrite)
+            {
+                await _dataStream.WriteAsync(data, 0, data.Length);
+                await _dataStream.FlushAsync();
+            }
+        }
+        public async Task<int> ReceiveDataAsync(byte[] buffer)// Nhận dữ liệu từ data connection.
+        {
+            if(_dataStream != null && _dataStream.CanRead)
+            {
+                return await _dataStream.ReadAsync(buffer, 0, buffer.Length);
+            }
+            return 0;
+        }
+        public string GetPhysicalPath(string virtualPath)// Chuyển đổi đường dẫn FTP virtual thành đường dẫn vật lý.
+        {
+            // Xử lý đường dẫn trống hoặc '/'
+            if (string.IsNullOrWhiteSpace(virtualPath) || virtualPath == "/")
+            {
+                return _configuration.RootFolder;
+            }
+            // Loại bỏ "/" đầu tiên nếu có
+            if (virtualPath.StartsWith("/"))
+            {
+                virtualPath = virtualPath.Substring(1);
+            }
+            // Kết hợp với RootFolder
+            string physicalPath = Path.Combine(_configuration.RootFolder, virtualPath);
+            // Kiểm tra bảo mật: đảm bảo không vượt quá RootFolder (directory traversal attack)
+            string fullPath = Path.GetFullPath(physicalPath);
+            string rootPath = Path.GetFullPath(_configuration.RootFolder);
+
+            if (!fullPath.StartsWith(rootPath, StringComparison.OrdinalIgnoreCase))
+            {
+                LogMessage?.Invoke($"[{SessionId}] Security violation: Attempted path traversal to {virtualPath}");
+                return null;
+            }
+            return fullPath;
         }
     }
 }

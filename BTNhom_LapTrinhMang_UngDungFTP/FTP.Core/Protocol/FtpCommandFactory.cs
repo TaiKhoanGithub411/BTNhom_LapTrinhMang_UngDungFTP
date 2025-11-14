@@ -15,10 +15,11 @@ namespace FTP.Core.Protocol
             {
                 { "USER", () => new UserCommand() },
                 { "PASS", () => new PassCommand() },
-                { "QUIT", () => new QuitCommand() }
-                // { "LIST", () => new ListCommand() },
-                // { "RETR", () => new RetrCommand() },
-                // { "STOR", () => new StorCommand() },
+                { "QUIT", () => new QuitCommand() },
+                { "PASV", () => new PasvCommand() },
+                { "LIST", () => new ListCommand() },
+                { "RETR", () => new RetrCommand() },
+                { "STOR", () => new StorCommand() },
             };
         }
         // Tạo command object từ command string.
