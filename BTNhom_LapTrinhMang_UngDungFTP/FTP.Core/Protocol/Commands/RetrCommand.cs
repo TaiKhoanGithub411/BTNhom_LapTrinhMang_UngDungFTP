@@ -13,6 +13,8 @@ namespace FTP.Core.Protocol.Commands
     {
         public async Task ExecuteAsync(ClientSession session, string arguments)
         {
+            bool isPassiveMode = session.PassiveListener != null;
+            bool isActiveMode = !string.IsNullOrEmpty(session.ActiveModeIP);
             // Kiểm tra xác thực
             if (!session.IsAuthenticated)
             {
@@ -28,9 +30,9 @@ namespace FTP.Core.Protocol.Commands
             }
 
             // Kiểm tra passive mode
-            if (session.PassiveListener == null)
+            if (!isPassiveMode && !isActiveMode)
             {
-                await session.SendResponseAsync(425, "Use PASV first");
+                await session.SendResponseAsync(425, "Use PORT or PASV first");
                 return;
             }
 
@@ -54,7 +56,9 @@ namespace FTP.Core.Protocol.Commands
                 await session.SendResponseAsync(150, $"Opening data connection for {fileName} ({fileInfo.Length} bytes)");
 
                 // Chấp nhận data connection
-                bool connected = await session.SetupDataConnectionAsync();
+                bool connected = isPassiveMode
+            ? await session.SetupDataConnectionAsync()      // Chờ client kết nối (Passive)
+            : await session.SetupActiveDataConnectionAsync(); // Server tự kết nối (Active)
                 if (!connected)
                 {
                     await session.SendResponseAsync(425, "Can't open data connection");

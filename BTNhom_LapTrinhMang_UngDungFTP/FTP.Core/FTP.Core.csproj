@@ -43,12 +43,17 @@
   <ItemGroup>
     <Compile Include="Constants\FtpConstants.cs" />
     <Compile Include="Protocol\Commands\Base\IFtpCommand.cs" />
+    <Compile Include="Protocol\Commands\CwdCommand.cs" />
     <Compile Include="Protocol\Commands\ListCommand.cs" />
     <Compile Include="Protocol\Commands\PassCommand.cs" />
     <Compile Include="Protocol\Commands\PasvCommand.cs" />
+    <Compile Include="Protocol\Commands\PortCommand.cs" />
+    <Compile Include="Protocol\Commands\PwdCommand.cs" />
     <Compile Include="Protocol\Commands\QuitCommand.cs" />
     <Compile Include="Protocol\Commands\RetrCommand.cs" />
     <Compile Include="Protocol\Commands\StorCommand.cs" />
+    <Compile Include="Protocol\Commands\SystCommand.cs" />
+    <Compile Include="Protocol\Commands\TypeCommand.cs" />
     <Compile Include="Protocol\Commands\UserCommand.cs" />
     <Compile Include="Protocol\FtpCommandFactory.cs" />
     <Compile Include="Protocol\FtpResponse.cs" />

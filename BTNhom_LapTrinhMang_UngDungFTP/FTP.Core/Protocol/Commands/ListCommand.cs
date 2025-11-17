@@ -18,20 +18,23 @@ namespace FTP.Core.Protocol.Commands
                 await session.SendResponseAsync(530, "Not logged in");
                 return;
             }
-            // Kiểm tra đã vào passive mode chưa
-            if (session.PassiveListener == null)
+
+            // Kiểm tra có PASV hoặc PORT chưa
+            bool hasPassive = session.PassiveListener != null;
+            bool hasActive = !string.IsNullOrEmpty(session.ActiveModeIP);
+
+            if (!hasPassive && !hasActive)
             {
-                await session.SendResponseAsync(425, "Use PASV first");
+                await session.SendResponseAsync(425, "Use PORT or PASV first");
                 return;
             }
+
             try
             {
-                // Xác định đường dẫn cần list (nếu không có argument, dùng current directory)
                 string targetPath = string.IsNullOrWhiteSpace(arguments)
                     ? session.CurrentDirectory
                     : arguments.Trim();
 
-                // Chuyển đổi sang physical path
                 string physicalPath = session.GetPhysicalPath(targetPath);
 
                 if (physicalPath == null || !Directory.Exists(physicalPath))
@@ -40,39 +43,30 @@ namespace FTP.Core.Protocol.Commands
                     return;
                 }
 
-                // Gửi response bắt đầu
                 await session.SendResponseAsync(150, "Opening data connection for directory list");
 
-                // Chấp nhận data connection từ client
-                bool connected = await session.SetupDataConnectionAsync();
+                // Thiết lập data connection (Active hoặc Passive)
+                bool connected = hasPassive
+                    ? await session.SetupDataConnectionAsync()
+                    : await session.SetupActiveDataConnectionAsync();
+
                 if (!connected)
                 {
                     await session.SendResponseAsync(425, "Can't open data connection");
                     return;
                 }
 
-                // Tạo directory listing (Unix-style format)
                 string listing = GenerateDirectoryListing(physicalPath);
-
-                // Gửi qua data connection
                 byte[] data = Encoding.ASCII.GetBytes(listing);
                 await session.SendDataAsync(data);
 
-                // Đóng data connection
                 session.CloseDataConnection();
-
-                // Gửi response hoàn thành
                 await session.SendResponseAsync(226, "Directory send OK");
-            }
-            catch (UnauthorizedAccessException)
-            {
-                session.CloseDataConnection();
-                await session.SendResponseAsync(550, "Permission denied");
             }
             catch (Exception ex)
             {
                 session.CloseDataConnection();
-                await session.SendResponseAsync(451, $"Error reading directory: {ex.Message}");
+                await session.SendResponseAsync(451, $"Error: {ex.Message}");
             }
         }
         // Tạo directory listing theo định dạng Unix-style (giống lệnh ls -l).

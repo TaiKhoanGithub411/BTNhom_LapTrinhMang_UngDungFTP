@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FTP.Core.Protocol;
-
+using FTP.Core.Constants;
 namespace FTP.Core.Server
 {
     //Đại diện cho một phiên kết nối của client - Control connection và xử lý FTP command
@@ -21,6 +21,8 @@ namespace FTP.Core.Server
         private readonly FtpCommandFactory _commandFactory;
         private TcpClient _dataClient;
         private NetworkStream _dataStream;
+        public string ActiveModeIP { get; set; }
+        public int ActiveModePort { get; set; }
         public string SessionId { get; private set; }//ID duy nhất cho session.
         public string ClientIPAddress { get; private set; }
         public string Username { get; set; }
@@ -89,24 +91,27 @@ namespace FTP.Core.Server
             {
                 LogMessage?.Invoke($"[{SessionId}] Error sending response: {ex.Message}");
             }
-        }        
-        public async Task StartHandlingAsync(CancellationToken cancellationToken)//Bắt đầu xử lý session (gửi welcome message và đợi commands).
+        }
+        public async Task StartHandlingAsync(CancellationToken cancellationToken)// Bắt đầu xử lý session (gửi welcome message và đợi commands).
         {
             try
             {
-                // Gửi welcome message (FTP 220)
-                await SendResponseAsync(Constants.FtpConstants.CODE_SERVICE_READY, "FTP Server Ready");
+                // Gửi welcome message
+                await SendResponseAsync(FtpConstants.CODE_SERVICE_READY, "FTP Server Ready");
                 LogMessage?.Invoke($"Session {SessionId} started for {ClientIPAddress}");
 
-                // Vòng lặp xử lý commands (sẽ implement đầy đủ sau)
+                // ===== SỬA LẠI VÒNG LẶP XỬ LÝ COMMANDS =====
+
+                // Vòng lặp chạy liên tục để đọc commands
                 while (!cancellationToken.IsCancellationRequested && _controlClient.Connected)
                 {
                     // Đọc command từ client
                     string commandLine = await _reader.ReadLineAsync();
 
-                    if (string.IsNullOrEmpty(commandLine))
+                    // Nếu commandLine là null, client đã ngắt kết nối
+                    if (commandLine == null)
                     {
-                        break; // Client đã ngắt kết nối
+                        break;
                     }
 
                     LastActivity = DateTime.Now;
@@ -114,8 +119,13 @@ namespace FTP.Core.Server
 
                     // Parse command
                     var parts = commandLine.Split(new[] { ' ' }, 2, StringSplitOptions.RemoveEmptyEntries);
-                    string commandName = parts[0];
+                    string commandName = parts.Length > 0 ? parts[0] : string.Empty;
                     string arguments = parts.Length > 1 ? parts[1] : string.Empty;
+
+                    if (string.IsNullOrEmpty(commandName))
+                    {
+                        continue; // Bỏ qua dòng trống
+                    }
 
                     // Tạo và thực thi command
                     var command = _commandFactory.CreateCommand(commandName);
@@ -129,12 +139,14 @@ namespace FTP.Core.Server
                         catch (Exception ex)
                         {
                             LogMessage?.Invoke($"[{SessionId}] Error executing {commandName}: {ex.Message}");
-                            await SendResponseAsync(451, "Requested action aborted: local error in processing");
+                            await SendResponseAsync(FtpConstants.CODE_ACTION_ABORTED,
+                                "Requested action aborted: local error in processing");
                         }
                     }
                     else
                     {
-                        await SendResponseAsync(500, "Command not recognized");
+                        await SendResponseAsync(FtpConstants.CODE_COMMAND_UNRECOGNIZED,
+                            "Command not recognized");
                     }
                 }
             }
@@ -150,7 +162,7 @@ namespace FTP.Core.Server
             }
             catch (Exception ex)
             {
-                LogMessage?.Invoke($"[{SessionId}] Error: {ex.Message}");
+                LogMessage?.Invoke($"[{SessionId}] Unhandled error in session: {ex.Message}");
             }
             finally
             {
@@ -243,6 +255,26 @@ namespace FTP.Core.Server
                 return null;
             }
             return fullPath;
+        }
+        public async Task<bool> SetupActiveDataConnectionAsync()
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(ActiveModeIP) || ActiveModePort == 0)
+                {
+                    return false;
+                }
+
+                _dataClient = new TcpClient();
+                await _dataClient.ConnectAsync(ActiveModeIP, ActiveModePort);
+                _dataStream = _dataClient.GetStream();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogMessage?.Invoke($"[{SessionId}] Error connecting active mode: {ex.Message}");
+                return false;
+            }
         }
     }
 }
