@@ -1,40 +1,74 @@
-﻿using FTP.Core.Server;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace FTP.Core.Server
-{ 
-    //Quản lý danh sách các ClientSession đang hoạt động - Sử dụng ConcurrentDictionary để đảm bảo thread-safe.
+{
     public class SessionManager
     {
-        // Dictionary thread-safe để lưu sessions
         private readonly ConcurrentDictionary<string, ClientSession> _sessions;
+        private readonly object _addSessionLock = new object(); // THÊM LOCK
+
         public event Action<ClientSession> SessionAdded;
         public event Action<string> SessionRemoved;
+
         public int ActiveSessionCount => _sessions.Count;
+
         public SessionManager()
         {
             _sessions = new ConcurrentDictionary<string, ClientSession>();
         }
-        public bool AddSession(ClientSession session)//Thêm session mới vào danh sách quản lý.
+
+        /// <summary>
+        /// Thêm session mới vào danh sách quản lý.
+        /// Xử lý trùng lặp SessionId bằng cách thêm suffix.
+        /// </summary>
+        public bool AddSession(ClientSession session)
         {
             if (session == null)
             {
                 throw new ArgumentNullException(nameof(session));
             }
 
-            bool added = _sessions.TryAdd(session.SessionId, session);
-
-            if (added)
+            // ===== THÊM LOCK ĐỂ TRÁNH RACE CONDITION =====
+            lock (_addSessionLock)
             {
-                SessionAdded?.Invoke(session);
-            }
+                string originalSessionId = session.SessionId;
+                int attemptCount = 0;
+                const int maxAttempts = 10;
+                bool added = false;
 
-            return added;
+                // Thử thêm session, nếu trùng thì tạo SessionId mới
+                while (!added && attemptCount < maxAttempts)
+                {
+                    added = _sessions.TryAdd(session.SessionId, session);
+
+                    if (!added)
+                    {
+                        // SessionId đã tồn tại, tạo SessionId mới
+                        attemptCount++;
+                        session.SessionId = $"{originalSessionId}_{attemptCount}";
+                    }
+                }
+
+                if (!added)
+                {
+                    // Không thể tạo SessionId duy nhất
+                    return false;
+                }
+
+                // Phát event
+                SessionAdded?.Invoke(session);
+                return true;
+            }
+            // =============================================
         }
-        public bool RemoveSession(string sessionId)//Xóa session khỏi danh sách quản lý.
+
+        /// <summary>
+        /// Xóa session khỏi danh sách quản lý.
+        /// </summary>
+        public bool RemoveSession(string sessionId)
         {
             if (string.IsNullOrWhiteSpace(sessionId))
             {
@@ -42,7 +76,6 @@ namespace FTP.Core.Server
             }
 
             bool removed = _sessions.TryRemove(sessionId, out _);
-
             if (removed)
             {
                 SessionRemoved?.Invoke(sessionId);
@@ -50,80 +83,51 @@ namespace FTP.Core.Server
 
             return removed;
         }
-        public ClientSession GetSession(string sessionId)//Lấy session theo SessionId.
-        {
-            if (string.IsNullOrWhiteSpace(sessionId))
-            {
-                return null;
-            }
 
+        public ClientSession GetSession(string sessionId)
+        {
             _sessions.TryGetValue(sessionId, out var session);
             return session;
         }
-        public IReadOnlyList<ClientSession> GetAllSessions()//Lấy tất cả sessions đang hoạt động.
-        {
-            return _sessions.Values.ToList().AsReadOnly();
-        }
-        public IReadOnlyList<ClientSession> GetSessionsByUsername(string username)//Lấy danh sách sessions theo username.
-        {
-            if (string.IsNullOrWhiteSpace(username))
-            {
-                return new List<ClientSession>().AsReadOnly();
-            }
 
-            return _sessions.Values
-                .Where(s => s.Username != null &&
-                           s.Username.Equals(username, StringComparison.OrdinalIgnoreCase))
-                .ToList()
-                .AsReadOnly();
-        }
-        public void CloseAllSessions()//Đóng tất cả sessions (dùng khi Stop server).
+        public IEnumerable<ClientSession> GetAllSessions()
         {
-            foreach (var session in _sessions.Values)
+            return _sessions.Values.ToList();
+        }
+
+        public bool IsConnectionLimitReached(int maxConnections)
+        {
+            return _sessions.Count >= maxConnections;
+        }
+
+        public bool DisconnectSession(string sessionId)
+        {
+            var session = GetSession(sessionId);
+            if (session != null)
+            {
+                session.Close();
+                return RemoveSession(sessionId);
+            }
+            return false;
+        }
+
+        public void CloseAllSessions()
+        {
+            var allSessions = _sessions.Values.ToList();
+
+            foreach (var session in allSessions)
             {
                 try
                 {
                     session.Close();
                 }
-                catch
+                catch (Exception ex)
                 {
-                    // Bỏ qua lỗi khi đóng server
+                    Console.WriteLine($"Error closing session {session.SessionId}: {ex.Message}");
                 }
             }
+
             _sessions.Clear();
-        }
-        public bool DisconnectSession(string sessionId)//Ngắt kết nối một session cụ thể.
-        {
-            var session = GetSession(sessionId);
-            if (session == null)
-            {
-                return false;
-            }
-
-            try
-            {
-                session.Close();
-                RemoveSession(sessionId);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-        public bool IsConnectionLimitReached(int maxConnections)//Kiểm tra xem có vượt quá số lượng kết nối cho phép không.
-        {
-            return _sessions.Count >= maxConnections;
-        }
-        public bool IsUserConnectionLimitReached(string username, int maxConnectionsPerUser)//Kiểm tra user đã vượt quá số kết nối cho phép chưa.
-        {
-            if (string.IsNullOrWhiteSpace(username))
-            {
-                return false;
-            }
-
-            var userSessions = GetSessionsByUsername(username);
-            return userSessions.Count >= maxConnectionsPerUser;
         }
     }
 }

@@ -23,66 +23,64 @@ namespace FTP.Core.Server
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             _sessionManager = sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
         }
-        private async Task ListenForClientsAsync(CancellationToken cancellationToken)// Vòng lặp lắng nghe và chấp nhận kết nối client
+        private async Task ListenForClientsAsync(CancellationToken cancellationToken)
         {
             try
             {
                 while (!cancellationToken.IsCancellationRequested)
                 {
-                    // Chấp nhận kết nối client (async, không block UI thread)
-                    TcpClient tcpClient = await _listener.AcceptTcpClientAsync()
-                        .ConfigureAwait(false);
+                    // Chấp nhận client kết nối
+                    TcpClient tcpClient = await _listener.AcceptTcpClientAsync();
 
-                    // Lấy IP của client
-                    var remoteEndPoint = (IPEndPoint)tcpClient.Client.RemoteEndPoint;
-                    string clientIP = remoteEndPoint.Address.ToString();
-
-                    LogMessage?.Invoke($"Client connected from {clientIP}");
-
-                    // Kiểm tra connection limit
-                    if (_sessionManager.IsConnectionLimitReached(_configuration.MaxConnections))
-                    {
-                        LogMessage?.Invoke($"Connection limit reached. Rejecting client {clientIP}");
-                        tcpClient.Close();
-                        continue;
-                    }
-
-                    // Kiểm tra IP filtering (chức năng nâng cao)
-                    if (!_configuration.AllowAllConnections && _configuration.BannedIPs.Contains(clientIP))
-                    {
-                        LogMessage?.Invoke($"Client {clientIP} is banned. Connection rejected.");
-                        tcpClient.Close();
-                        continue;
-                    }
-
-                    // Tạo ClientSession mới
+                    // Tạo ClientSession
                     var clientSession = new ClientSession(tcpClient, _configuration);
 
-                    // Subscribe vào LogMessage event của session
-                    clientSession.LogMessage += (message) => LogMessage?.Invoke(message);
+                    // Subscribe vào event log
+                    clientSession.LogMessage += (msg) => LogMessage?.Invoke(msg);
 
-                    // Thêm session vào SessionManager
-                    _sessionManager.AddSession(clientSession);
+                    // KIỂM TRA CONNECTION LIMIT
+                    if (_sessionManager.IsConnectionLimitReached(_configuration.MaxConnections))
+                    {
+                        LogMessage?.Invoke($"Connection limit reached. Rejecting client from {clientSession.ClientIPAddress}");
+                        clientSession.Close();
+                        continue;
+                    }
 
-                    // Bắt đầu xử lý session trong một Task riêng
+                    // THÊM SESSION VÀO MANAGER
+                    bool added = _sessionManager.AddSession(clientSession);
+                    if (!added)
+                    {
+                        LogMessage?.Invoke($"Failed to add session {clientSession.SessionId}. SessionId might be duplicate.");
+                        clientSession.Close();
+                        continue;
+                    }
+
+                    // BẮT ĐẦU XỬ LÝ SESSION
                     _ = Task.Run(async () =>
                     {
-                        await clientSession.StartHandlingAsync(cancellationToken);
-
-                        // Sau khi session kết thúc, xóa khỏi SessionManager
-                        _sessionManager.RemoveSession(clientSession.SessionId);
+                        try
+                        {
+                            await clientSession.StartHandlingAsync(cancellationToken);
+                        }
+                        catch (Exception ex)
+                        {
+                            LogMessage?.Invoke($"Error in session {clientSession.SessionId}: {ex.Message}");
+                        }
+                        finally
+                        {
+                            // Xóa session khỏi manager
+                            bool removed = _sessionManager.RemoveSession(clientSession.SessionId);
+                            if (removed)
+                            {
+                                LogMessage?.Invoke($"Session {clientSession.SessionId} removed from SessionManager");
+                            }
+                        }
                     }, cancellationToken);
                 }
             }
             catch (ObjectDisposedException)
             {
-                // Listener đã bị dispose (Stop được gọi) - hành vi bình thường
-                LogMessage?.Invoke("Listener stopped.");
-            }
-            catch (OperationCanceledException)
-            {
-                // Cancellation token triggered - hành vi bình thường
-                LogMessage?.Invoke("Server operation cancelled.");
+                // Listener đã bị dispose (server stop)
             }
             catch (Exception ex)
             {

@@ -13,20 +13,39 @@ namespace FTP.Core.Protocol
         {
             _commandCreators = new Dictionary<string, Func<IFtpCommand>>(StringComparer.OrdinalIgnoreCase)
             {
+                // Authentication
                 { "USER", () => new UserCommand() },
                 { "PASS", () => new PassCommand() },
                 { "QUIT", () => new QuitCommand() },
-                { "SYST", () => new SystCommand() },    
-                { "PWD",  () => new PwdCommand() },     
-                { "CWD",  () => new CwdCommand() }, 
+
+                // System info
+                { "SYST", () => new SystCommand() },
+                { "PWD", () => new PwdCommand() },
+                { "XPWD", () => new PwdCommand() },
+
+                // Directory navigation
+                { "CWD", () => new CwdCommand() },    
+                { "XCWD", () => new CwdCommand() },
+
+                // Transfer mode
                 { "TYPE", () => new TypeCommand() },
-                { "PORT", () => new PortCommand() },    
+                { "PORT", () => new PortCommand() },
                 { "PASV", () => new PasvCommand() },
+
+                // Directory listing
                 { "LIST", () => new ListCommand() },
+                { "NLST", () => new ListCommand() },
+
+                // File operations
                 { "RETR", () => new RetrCommand() },
                 { "STOR", () => new StorCommand() },
-                { "XPWD", () => new PwdCommand() },
-                { "NLST", () => new ListCommand() },
+                { "DELE", () => new DeleCommand() },
+
+                // Directory management
+                { "MKD", () => new MkdCommand() },
+                { "XMKD", () => new MkdCommand() },
+                { "RMD", () => new RmdCommand() },
+                { "XRMD", () => new RmdCommand() },
             };
         }
         // Tạo command object từ command string.

@@ -23,7 +23,7 @@ namespace FTP.Core.Server
         private NetworkStream _dataStream;
         public string ActiveModeIP { get; set; }
         public int ActiveModePort { get; set; }
-        public string SessionId { get; private set; }//ID duy nhất cho session.
+        public string SessionId { get; internal set; }//ID duy nhất cho session.
         public string ClientIPAddress { get; private set; }
         public string Username { get; set; }
         public DateTime ConnectedTime { get; private set; }
@@ -40,8 +40,8 @@ namespace FTP.Core.Server
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             _commandFactory = new FtpCommandFactory();
 
-            // Tạo SessionId ngắn (8 ký tự đầu của GUID)
-            SessionId = Guid.NewGuid().ToString("N").Substring(0, 8);
+            // Tạo SessionId
+            SessionId = GenerateUniqueSessionId();
 
             // Lấy IP address của client
             var remoteEndPoint = (IPEndPoint)controlClient.Client.RemoteEndPoint;
@@ -59,7 +59,8 @@ namespace FTP.Core.Server
             _reader = new StreamReader(_controlStream, Encoding.ASCII);
             _writer = new StreamWriter(_controlStream, Encoding.ASCII) { AutoFlush = true };
         }
-        public void Close()//Đóng kết nối client
+        public event Action<string> SessionClosed;
+        public void Close()
         {
             try
             {
@@ -69,8 +70,8 @@ namespace FTP.Core.Server
                 _reader?.Close();
                 _controlStream?.Close();
                 _controlClient?.Close();
-
                 LogMessage?.Invoke($"[{SessionId}] Session closed");
+                SessionClosed?.Invoke(SessionId);
             }
             catch (Exception ex)
             {
@@ -275,6 +276,10 @@ namespace FTP.Core.Server
                 LogMessage?.Invoke($"[{SessionId}] Error connecting active mode: {ex.Message}");
                 return false;
             }
+        }
+        private static string GenerateUniqueSessionId()
+        {
+            return Guid.NewGuid().ToString("N");
         }
     }
 }
