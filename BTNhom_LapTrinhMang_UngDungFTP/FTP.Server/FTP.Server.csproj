@@ -88,11 +88,6 @@
     <Compile Include="Forms\SettingsForm.Designer.cs">
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Modules\Authentication\AuthenticationService.cs" />
-    <Compile Include="Modules\CommandProcessor\CommandHandler.cs" />
-    <Compile Include="Modules\FileManager\FileTransferService.cs" />
-    <Compile Include="Modules\SessionManagement\SessionManager.cs" />
-    <Compile Include="Network\ServerListener.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Forms\FtpServerForm.resx">
