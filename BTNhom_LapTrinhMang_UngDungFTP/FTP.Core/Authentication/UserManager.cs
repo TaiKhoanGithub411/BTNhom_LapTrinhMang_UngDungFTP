@@ -28,17 +28,36 @@ namespace FTP.Core.Authentication
                 {
                     if (!File.Exists(_usersFilePath))
                     {
-                        // Tạo default admin user
+                        // File không tồn tại → Tạo default users
                         CreateDefaultUsers();
                         SaveUsers();
                         return;
                     }
 
+                    // Đọc file JSON
                     string json = File.ReadAllText(_usersFilePath);
+
+                    // Kiểm tra nội dung file
+                    if (string.IsNullOrWhiteSpace(json) || json.Trim() == "[]")
+                    {
+                        // File rỗng hoặc array rỗng → Tạo default users
+                        CreateDefaultUsers();
+                        SaveUsers();
+                        return;
+                    }
+
+                    // Deserialize JSON
                     _users = JsonSerializer.Deserialize<List<User>>(json, new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
                     }) ?? new List<User>();
+
+                    // Nếu không có users nào → Tạo default
+                    if (_users.Count == 0)
+                    {
+                        CreateDefaultUsers();
+                        SaveUsers();
+                    }
                 }
                 catch (Exception ex)
                 {

@@ -68,7 +68,6 @@ namespace FTP.Core.Protocol.Commands
 
             await session.SendResponseAsync(230, "User logged in");
 
-            // ==========================================
         }
     }
 }

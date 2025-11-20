@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using FTP.Core.Server;
 using FTP.Core.Enum;
+using FTP.Core.Authentication;
 
 namespace FTP.Server
 {
@@ -19,8 +21,13 @@ namespace FTP.Server
 
         private void FtpServerForm_Load(object sender, EventArgs e)
         {
+            // Tạo thư mục Data nếu chưa tồn tại
+            string usersFilePath = GetUsersFilePath();
+            var userManager = new UserManager(usersFilePath);
+
             // Khởi tạo các đối tượng
             _config = ServerConfiguration.CreateDefault();
+            _config.UserManager = userManager;
             _sessionManager = new SessionManager();
             _ftpServer = new FtpServer(_config, _sessionManager);
 
@@ -314,5 +321,33 @@ namespace FTP.Server
                 }
             }
         }
+        private string GetUsersFilePath()
+        {
+            // Lấy thư mục chứa executable (bin\Debug hoặc bin\Release)
+            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+
+            // Tạo thư mục Data nếu chưa tồn tại
+            string dataFolder = Path.Combine(baseDirectory, "Data");
+
+            if (!Directory.Exists(dataFolder))
+            {
+                try
+                {
+                    Directory.CreateDirectory(dataFolder);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Failed to create Data folder: {ex.Message}",
+                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    // Fallback: Dùng thư mục gốc
+                    return Path.Combine(baseDirectory, "users.json");
+                }
+            }
+
+            // Trả về đường dẫn đầy đủ tới users.json
+            return Path.Combine(dataFolder, "users.json");
+        }
+
     }
 }

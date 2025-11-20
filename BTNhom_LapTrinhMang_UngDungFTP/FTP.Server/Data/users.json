@@ -1,0 +1,13 @@
+﻿[
+  {
+    "Username": "admin",
+    "PasswordHash": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918", //password: admin
+    "Permissions": 63, //có đầy đủ quyền
+    "HomeDirectory": "C:\\FTPRoot",
+    "QuotaBytes": -1,
+    "UsedBytes": 0,
+    "IsDisabled": false,
+    "CreatedAt": "2025-11-20T10:00:00.000000",
+    "LastLogin": null
+  },
+]
