@@ -2,26 +2,18 @@
 using System.Threading.Tasks;
 using FTP.Core.Protocol.Commands.Base;
 using FTP.Core.Server;
-using FTP.Core.Enum;
+using FTP.Core.Authentication;
+using System.IO;
 
 namespace FTP.Core.Protocol.Commands
 {
-    //Xử lênh PASS (nhập password và xác thực)
     public class PassCommand : IFtpCommand
     {
-        private bool AuthenticateUser(string username, string password)
-        {
-            // Demo: chấp nhận "admin/admin" và "user/user" --> Chỉ thử vì chưa làm UserManager
-            //Có UserManager thì bỏ hàm này
-            return (username == "admin" && password == "admin") ||
-                   (username == "user" && password == "user");
-        }
         public async Task ExecuteAsync(ClientSession session, string arguments)
         {
-            // Kiểm tra đã nhập username chưa
             if (string.IsNullOrWhiteSpace(session.Username))
             {
-                await session.SendResponseAsync(503, "Bad sequence of commands. Send USER first");
+                await session.SendResponseAsync(503, "Login with USER first");
                 return;
             }
 
@@ -30,20 +22,53 @@ namespace FTP.Core.Protocol.Commands
                 await session.SendResponseAsync(501, "Syntax error: PASS <password>");
                 return;
             }
+
             string password = arguments.Trim();
-            //Xác thực với UserManager (tạm thời hardcode để test)
-            bool isAuthenticated = AuthenticateUser(session.Username, password);
-            if (isAuthenticated)
+
+            // Lấy UserManager từ configuration (cần thêm vào ServerConfiguration)
+            var userManager = session.Configuration.UserManager;
+
+            if (userManager == null)
             {
-                session.IsAuthenticated = true;
-                session.Status = ClientStatus.Idle;
-                await session.SendResponseAsync(230, "User logged in");
+                await session.SendResponseAsync(530, "Authentication service unavailable");
+                return;
             }
-            else
+
+            // Authenticate
+            User user = userManager.Authenticate(session.Username, password);
+
+            if (user == null)
             {
-                session.Username = null;
                 await session.SendResponseAsync(530, "Login incorrect");
+                session.IsAuthenticated = false;
+                return;
             }
+
+            // Đăng nhập thành công
+            session.IsAuthenticated = true;
+            session.CurrentUser = user;
+
+            // Tạo PathMapper với home directory của user
+            session.PathMapper = new PathMapper(user.HomeDirectory);
+
+            // Đảm bảo home directory tồn tại
+            if (!Directory.Exists(user.HomeDirectory))
+            {
+                try
+                {
+                    Directory.CreateDirectory(user.HomeDirectory);
+                }
+                catch (Exception ex)
+                {
+                    await session.SendResponseAsync(550, $"Cannot create home directory: {ex.Message}");
+                    session.IsAuthenticated = false;
+                    return;
+                }
+            }
+
+            await session.SendResponseAsync(230, "User logged in");
+
+            // ==========================================
         }
     }
 }

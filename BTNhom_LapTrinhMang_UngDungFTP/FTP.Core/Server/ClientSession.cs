@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FTP.Core.Protocol;
 using FTP.Core.Constants;
+using FTP.Core.Authentication;
 namespace FTP.Core.Server
 {
     //Đại diện cho một phiên kết nối của client - Control connection và xử lý FTP command
@@ -15,12 +16,15 @@ namespace FTP.Core.Server
     {
         private readonly TcpClient _controlClient;
         private readonly ServerConfiguration _configuration;
+        public ServerConfiguration Configuration => _configuration;
         private NetworkStream _controlStream;
         private StreamReader _reader;
         private StreamWriter _writer;
         private readonly FtpCommandFactory _commandFactory;
         private TcpClient _dataClient;
         private NetworkStream _dataStream;
+        public PathMapper PathMapper { get; internal set; }
+        public User CurrentUser { get; set; }
         public string ActiveModeIP { get; set; }
         public int ActiveModePort { get; set; }
         public string SessionId { get; internal set; }//ID duy nhất cho session.
@@ -53,6 +57,10 @@ namespace FTP.Core.Server
             Status = ClientStatus.Connected;
             IsAuthenticated = false;
             CurrentDirectory = "/";
+
+            // CurrentUser và PathMapper sẽ được set sau khi login
+            CurrentUser = null;
+            PathMapper = null;
 
             // Khởi tạo NetworkStream
             _controlStream = controlClient.GetStream();
@@ -232,30 +240,21 @@ namespace FTP.Core.Server
             }
             return 0;
         }
-        public string GetPhysicalPath(string virtualPath)// Chuyển đổi đường dẫn FTP virtual thành đường dẫn vật lý.
+        public string GetPhysicalPath(string virtualPath)// Lấy physical path từ virtual path (FTP path) - Sử dụng PathMapper của user
         {
-            // Xử lý đường dẫn trống hoặc '/'
-            if (string.IsNullOrWhiteSpace(virtualPath) || virtualPath == "/")
+            // Nếu chưa login, không cho phép
+            if (PathMapper == null)
             {
-                return _configuration.RootFolder;
-            }
-            // Loại bỏ "/" đầu tiên nếu có
-            if (virtualPath.StartsWith("/"))
-            {
-                virtualPath = virtualPath.Substring(1);
-            }
-            // Kết hợp với RootFolder
-            string physicalPath = Path.Combine(_configuration.RootFolder, virtualPath);
-            // Kiểm tra bảo mật: đảm bảo không vượt quá RootFolder (directory traversal attack)
-            string fullPath = Path.GetFullPath(physicalPath);
-            string rootPath = Path.GetFullPath(_configuration.RootFolder);
-
-            if (!fullPath.StartsWith(rootPath, StringComparison.OrdinalIgnoreCase))
-            {
-                LogMessage?.Invoke($"[{SessionId}] Security violation: Attempted path traversal to {virtualPath}");
                 return null;
             }
-            return fullPath;
+
+            // Nếu path là relative (không bắt đầu với /), combine với CurrentDirectory
+            if (!virtualPath.StartsWith("/"))
+            {
+                virtualPath = CurrentDirectory.TrimEnd('/') + "/" + virtualPath;
+            }
+
+            return PathMapper.GetPhysicalPath(virtualPath);
         }
         public async Task<bool> SetupActiveDataConnectionAsync()
         {

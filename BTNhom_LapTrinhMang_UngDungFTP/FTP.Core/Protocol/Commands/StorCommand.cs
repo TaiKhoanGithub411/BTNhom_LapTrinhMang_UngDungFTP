@@ -5,6 +5,7 @@ using FTP.Core.Protocol.Commands.Base;
 using FTP.Core.Server;
 using FTP.Core.Enum;
 using FTP.Core.Constants;
+using FTP.Core.Authentication;
 
 namespace FTP.Core.Protocol.Commands
 {
@@ -21,7 +22,12 @@ namespace FTP.Core.Protocol.Commands
                 await session.SendResponseAsync(530, "Not logged in");
                 return;
             }
-
+            //Kiểm tra quyền
+            if (!PermissionChecker.CanWrite(session.CurrentUser.Permissions))
+            {
+                await session.SendResponseAsync(550, "Permission denied");
+                return;
+            }
             // Kiểm tra argument
             if (string.IsNullOrWhiteSpace(arguments))
             {

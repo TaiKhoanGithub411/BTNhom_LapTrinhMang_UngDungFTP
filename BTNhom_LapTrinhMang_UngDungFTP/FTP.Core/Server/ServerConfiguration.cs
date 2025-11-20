@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using FTP.Core.Authentication;
 
 namespace FTP.Core.Server
 {
@@ -16,6 +14,7 @@ namespace FTP.Core.Server
         public int MaxConnectionsPerUser { get; set; }//Số kết nối tối đa cho mỗi user.
         public int LoginTimeout { get; set; }
         public bool AllowAllConnections { get; set; }
+        public UserManager UserManager { get; set; }
         public List<string> BannedIPs { get; set; }//Danh sách IP bị cấm kết nối
         public ServerConfiguration()
         {

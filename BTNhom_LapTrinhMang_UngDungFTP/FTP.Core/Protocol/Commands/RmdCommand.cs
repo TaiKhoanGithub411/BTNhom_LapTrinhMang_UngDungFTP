@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using FTP.Core.Protocol.Commands.Base;
 using FTP.Core.Server;
+using FTP.Core.Authentication;
 
 namespace FTP.Core.Protocol.Commands
 {
@@ -16,7 +17,11 @@ namespace FTP.Core.Protocol.Commands
                 await session.SendResponseAsync(530, "Not logged in");
                 return;
             }
-
+            if (!PermissionChecker.CanCreateDirectory(session.CurrentUser.Permissions))
+            {
+                await session.SendResponseAsync(550, "Permission denied");
+                return;
+            }
             if (string.IsNullOrWhiteSpace(arguments))
             {
                 await session.SendResponseAsync(501, "Syntax error: RMD <directory-name>");
