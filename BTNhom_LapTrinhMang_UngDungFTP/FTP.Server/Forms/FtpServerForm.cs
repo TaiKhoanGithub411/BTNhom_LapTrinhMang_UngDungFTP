@@ -348,6 +348,5 @@ namespace FTP.Server
             // Trả về đường dẫn đầy đủ tới users.json
             return Path.Combine(dataFolder, "users.json");
         }
-
     }
 }
