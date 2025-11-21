@@ -115,6 +115,7 @@ namespace FTP.Server
             this.btnSetting.TabIndex = 8;
             this.btnSetting.Text = "Setting";
             this.btnSetting.UseVisualStyleBackColor = false;
+            this.btnSetting.Click += new System.EventHandler(this.btnSetting_Click);
             // 
             // lblStatus
             // 

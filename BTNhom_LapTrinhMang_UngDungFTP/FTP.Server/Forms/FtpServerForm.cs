@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using FTP.Core.Server;
 using FTP.Core.Enum;
 using FTP.Core.Authentication;
+using FTP.Server.Forms;
 
 namespace FTP.Server
 {
@@ -347,6 +348,20 @@ namespace FTP.Server
 
             // Trả về đường dẫn đầy đủ tới users.json
             return Path.Combine(dataFolder, "users.json");
+        }
+
+        private void btnSetting_Click(object sender, EventArgs e)
+        {
+            if (_config == null)
+            {
+                MessageBox.Show("Server configuration not ready yet.");
+                return;
+            }
+
+            using (var frm = new SettingsForm(_config)) // *** TRUYỀN _config VÀO ĐÂY ***
+            {
+                frm.ShowDialog();
+            }
         }
     }
 }

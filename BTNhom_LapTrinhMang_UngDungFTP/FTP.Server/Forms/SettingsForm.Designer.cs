@@ -60,6 +60,13 @@ namespace FTP.Server.Forms
             this.label4 = new System.Windows.Forms.Label();
             this.tabAdvanced = new System.Windows.Forms.TabPage();
             this.groupBoxIPFilltering = new System.Windows.Forms.GroupBox();
+            this.btnRemoveIP = new System.Windows.Forms.Button();
+            this.btnAddIP = new System.Windows.Forms.Button();
+            this.txtIP = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.lstBannedIPs = new System.Windows.Forms.ListBox();
+            this.rdDenySelected = new System.Windows.Forms.RadioButton();
+            this.rdAllowAll = new System.Windows.Forms.RadioButton();
             this.groupBoxConnectLimit = new System.Windows.Forms.GroupBox();
             this.numLoginTimeOut = new System.Windows.Forms.NumericUpDown();
             this.numMaxConnsPerUser = new System.Windows.Forms.NumericUpDown();
@@ -70,13 +77,6 @@ namespace FTP.Server.Forms
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnOK = new System.Windows.Forms.Button();
             this.btnApply = new System.Windows.Forms.Button();
-            this.rdAllowAll = new System.Windows.Forms.RadioButton();
-            this.rdDenySelected = new System.Windows.Forms.RadioButton();
-            this.lstBannedIPs = new System.Windows.Forms.ListBox();
-            this.label8 = new System.Windows.Forms.Label();
-            this.txtIP = new System.Windows.Forms.TextBox();
-            this.btnAddIP = new System.Windows.Forms.Button();
-            this.btnRemoveIP = new System.Windows.Forms.Button();
             this.groupBoxUser.SuspendLayout();
             this.tabUsers.SuspendLayout();
             this.groupBoxUserDetail.SuspendLayout();
@@ -117,6 +117,7 @@ namespace FTP.Server.Forms
             this.btnDeleteUser.TabIndex = 10;
             this.btnDeleteUser.Text = "Delete User";
             this.btnDeleteUser.UseVisualStyleBackColor = true;
+            this.btnDeleteUser.Click += new System.EventHandler(this.btnDeleteUser_Click);
             // 
             // btnEditUser
             // 
@@ -127,6 +128,7 @@ namespace FTP.Server.Forms
             this.btnEditUser.TabIndex = 9;
             this.btnEditUser.Text = "Edit User";
             this.btnEditUser.UseVisualStyleBackColor = true;
+            this.btnEditUser.Click += new System.EventHandler(this.btnEditUser_Click);
             // 
             // btnAddUser
             // 
@@ -137,6 +139,7 @@ namespace FTP.Server.Forms
             this.btnAddUser.TabIndex = 8;
             this.btnAddUser.Text = "Add User";
             this.btnAddUser.UseVisualStyleBackColor = true;
+            this.btnAddUser.Click += new System.EventHandler(this.btnAddUser_Click);
             // 
             // lvUsers
             // 
@@ -148,6 +151,7 @@ namespace FTP.Server.Forms
             this.lvUsers.Size = new System.Drawing.Size(865, 180);
             this.lvUsers.TabIndex = 0;
             this.lvUsers.UseCompatibleStateImageBehavior = false;
+            this.lvUsers.SelectedIndexChanged += new System.EventHandler(this.lvUsers_SelectedIndexChanged);
             // 
             // tabUsers
             // 
@@ -190,6 +194,7 @@ namespace FTP.Server.Forms
             this.btnCancelUser.TabIndex = 13;
             this.btnCancelUser.Text = "Cancel User";
             this.btnCancelUser.UseVisualStyleBackColor = true;
+            this.btnCancelUser.Click += new System.EventHandler(this.btnCancelUser_Click);
             // 
             // txtHomeDir
             // 
@@ -207,6 +212,7 @@ namespace FTP.Server.Forms
             this.btnSaveUser.TabIndex = 12;
             this.btnSaveUser.Text = "Save User";
             this.btnSaveUser.UseVisualStyleBackColor = true;
+            this.btnSaveUser.Click += new System.EventHandler(this.btnSaveUser_Click);
             // 
             // btnBrowseHome
             // 
@@ -215,8 +221,9 @@ namespace FTP.Server.Forms
             this.btnBrowseHome.Name = "btnBrowseHome";
             this.btnBrowseHome.Size = new System.Drawing.Size(117, 47);
             this.btnBrowseHome.TabIndex = 11;
-            this.btnBrowseHome.Text = "Home";
+            this.btnBrowseHome.Text = "Browse Home";
             this.btnBrowseHome.UseVisualStyleBackColor = true;
+            this.btnBrowseHome.Click += new System.EventHandler(this.btnBrowseHome_Click);
             // 
             // txtPassword
             // 
@@ -429,6 +436,75 @@ namespace FTP.Server.Forms
             this.groupBoxIPFilltering.TabStop = false;
             this.groupBoxIPFilltering.Text = "IP Filltering";
             // 
+            // btnRemoveIP
+            // 
+            this.btnRemoveIP.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.btnRemoveIP.Location = new System.Drawing.Point(520, 253);
+            this.btnRemoveIP.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
+            this.btnRemoveIP.Name = "btnRemoveIP";
+            this.btnRemoveIP.Size = new System.Drawing.Size(81, 37);
+            this.btnRemoveIP.TabIndex = 9;
+            this.btnRemoveIP.Text = "Remove IP";
+            this.btnRemoveIP.UseVisualStyleBackColor = true;
+            // 
+            // btnAddIP
+            // 
+            this.btnAddIP.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.btnAddIP.Location = new System.Drawing.Point(412, 253);
+            this.btnAddIP.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
+            this.btnAddIP.Name = "btnAddIP";
+            this.btnAddIP.Size = new System.Drawing.Size(81, 37);
+            this.btnAddIP.TabIndex = 8;
+            this.btnAddIP.Text = "Add IP";
+            this.btnAddIP.UseVisualStyleBackColor = true;
+            // 
+            // txtIP
+            // 
+            this.txtIP.Location = new System.Drawing.Point(118, 257);
+            this.txtIP.Name = "txtIP";
+            this.txtIP.Size = new System.Drawing.Size(230, 27);
+            this.txtIP.TabIndex = 7;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(72, 260);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(22, 22);
+            this.label8.TabIndex = 6;
+            this.label8.Text = "IP";
+            // 
+            // lstBannedIPs
+            // 
+            this.lstBannedIPs.FormattingEnabled = true;
+            this.lstBannedIPs.ItemHeight = 22;
+            this.lstBannedIPs.Location = new System.Drawing.Point(62, 102);
+            this.lstBannedIPs.Name = "lstBannedIPs";
+            this.lstBannedIPs.Size = new System.Drawing.Size(539, 114);
+            this.lstBannedIPs.TabIndex = 2;
+            // 
+            // rdDenySelected
+            // 
+            this.rdDenySelected.AutoSize = true;
+            this.rdDenySelected.Location = new System.Drawing.Point(62, 70);
+            this.rdDenySelected.Name = "rdDenySelected";
+            this.rdDenySelected.Size = new System.Drawing.Size(169, 26);
+            this.rdDenySelected.TabIndex = 1;
+            this.rdDenySelected.TabStop = true;
+            this.rdDenySelected.Text = "Deny connection from";
+            this.rdDenySelected.UseVisualStyleBackColor = true;
+            // 
+            // rdAllowAll
+            // 
+            this.rdAllowAll.AutoSize = true;
+            this.rdAllowAll.Location = new System.Drawing.Point(62, 38);
+            this.rdAllowAll.Name = "rdAllowAll";
+            this.rdAllowAll.Size = new System.Drawing.Size(160, 26);
+            this.rdAllowAll.TabIndex = 0;
+            this.rdAllowAll.TabStop = true;
+            this.rdAllowAll.Text = "Allow all connections";
+            this.rdAllowAll.UseVisualStyleBackColor = true;
+            // 
             // groupBoxConnectLimit
             // 
             this.groupBoxConnectLimit.Controls.Add(this.numLoginTimeOut);
@@ -518,6 +594,7 @@ namespace FTP.Server.Forms
             this.btnCancel.TabIndex = 7;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
+            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
             // btnOK
             // 
@@ -529,6 +606,7 @@ namespace FTP.Server.Forms
             this.btnOK.TabIndex = 6;
             this.btnOK.Text = "OK";
             this.btnOK.UseVisualStyleBackColor = true;
+            this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
             // 
             // btnApply
             // 
@@ -540,75 +618,7 @@ namespace FTP.Server.Forms
             this.btnApply.TabIndex = 5;
             this.btnApply.Text = "Apply";
             this.btnApply.UseVisualStyleBackColor = true;
-            // 
-            // rdAllowAll
-            // 
-            this.rdAllowAll.AutoSize = true;
-            this.rdAllowAll.Location = new System.Drawing.Point(62, 38);
-            this.rdAllowAll.Name = "rdAllowAll";
-            this.rdAllowAll.Size = new System.Drawing.Size(160, 26);
-            this.rdAllowAll.TabIndex = 0;
-            this.rdAllowAll.TabStop = true;
-            this.rdAllowAll.Text = "Allow all connections";
-            this.rdAllowAll.UseVisualStyleBackColor = true;
-            // 
-            // rdDenySelected
-            // 
-            this.rdDenySelected.AutoSize = true;
-            this.rdDenySelected.Location = new System.Drawing.Point(62, 70);
-            this.rdDenySelected.Name = "rdDenySelected";
-            this.rdDenySelected.Size = new System.Drawing.Size(169, 26);
-            this.rdDenySelected.TabIndex = 1;
-            this.rdDenySelected.TabStop = true;
-            this.rdDenySelected.Text = "Deny connection from";
-            this.rdDenySelected.UseVisualStyleBackColor = true;
-            // 
-            // lstBannedIPs
-            // 
-            this.lstBannedIPs.FormattingEnabled = true;
-            this.lstBannedIPs.ItemHeight = 22;
-            this.lstBannedIPs.Location = new System.Drawing.Point(62, 102);
-            this.lstBannedIPs.Name = "lstBannedIPs";
-            this.lstBannedIPs.Size = new System.Drawing.Size(539, 114);
-            this.lstBannedIPs.TabIndex = 2;
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(72, 260);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(22, 22);
-            this.label8.TabIndex = 6;
-            this.label8.Text = "IP";
-            // 
-            // txtIP
-            // 
-            this.txtIP.Location = new System.Drawing.Point(118, 257);
-            this.txtIP.Name = "txtIP";
-            this.txtIP.Size = new System.Drawing.Size(230, 27);
-            this.txtIP.TabIndex = 7;
-            // 
-            // btnAddIP
-            // 
-            this.btnAddIP.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.btnAddIP.Location = new System.Drawing.Point(412, 253);
-            this.btnAddIP.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
-            this.btnAddIP.Name = "btnAddIP";
-            this.btnAddIP.Size = new System.Drawing.Size(81, 37);
-            this.btnAddIP.TabIndex = 8;
-            this.btnAddIP.Text = "Add IP";
-            this.btnAddIP.UseVisualStyleBackColor = true;
-            // 
-            // btnRemoveIP
-            // 
-            this.btnRemoveIP.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.btnRemoveIP.Location = new System.Drawing.Point(520, 253);
-            this.btnRemoveIP.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
-            this.btnRemoveIP.Name = "btnRemoveIP";
-            this.btnRemoveIP.Size = new System.Drawing.Size(81, 37);
-            this.btnRemoveIP.TabIndex = 9;
-            this.btnRemoveIP.Text = "Remove IP";
-            this.btnRemoveIP.UseVisualStyleBackColor = true;
+            this.btnApply.Click += new System.EventHandler(this.btnApply_Click);
             // 
             // SettingsForm
             // 
