@@ -10,6 +10,8 @@ using System.Windows.Forms;
 using FTP.Core.Server;
 using FTP.Core.Authentication;
 using System.IO;
+using System.Net;
+
 
 namespace FTP.Server.Forms
 {
@@ -23,6 +25,8 @@ namespace FTP.Server.Forms
         public SettingsForm()
         {
             InitializeComponent();
+            txtPassword.UseSystemPasswordChar = true;
+
         }
         #region MainButton
         private void SaveAllSettings()
@@ -33,12 +37,24 @@ namespace FTP.Server.Forms
                 btnSaveUser_Click(null, null);
             }
 
-            // 2. Tab Advanced – lưu cấu hình server
+            // 2. Tab Permission – lưu permission của user đang chọn
+            SavePermissionForSelectedUser();
+
+            // 3. Tab Advanced – lưu cấu hình server
             if (_config != null)
             {
                 _config.MaxConnections = (int)numMaxConnections.Value;
                 _config.MaxConnectionsPerUser = (int)numMaxConnsPerUser.Value;
                 _config.LoginTimeout = (int)numLoginTimeOut.Value;
+
+                // IP filter
+                _config.AllowAllConnections = rdAllowAll.Checked;
+
+                _config.BannedIPs.Clear();
+                foreach (var item in lstBannedIPs.Items)
+                {
+                    _config.BannedIPs.Add(item.ToString());
+                }
             }
 
             MessageBox.Show("Settings have been saved successfully!",
@@ -75,6 +91,7 @@ namespace FTP.Server.Forms
                            ?? throw new InvalidOperationException("UserManager is null in config.");
 
             InitUserManagementUI();
+            InitPermissionTab();
         }
         private void InitUserManagementUI()
         {
@@ -85,13 +102,7 @@ namespace FTP.Server.Forms
 
         private void SetupUserListView()
         {
-            lvUsers.View = View.Details;
-            lvUsers.FullRowSelect = true;
-            lvUsers.GridLines = true;
-
             lvUsers.Columns.Clear();
-            lvUsers.Columns.Add("Name", 150);
-            lvUsers.Columns.Add("Home Directory", 400);
         }
 
         private void LoadUsersToListView()
@@ -114,6 +125,8 @@ namespace FTP.Server.Forms
             txtUsername.Text = "";
             txtPassword.Text = "";
             txtHomeDir.Text = "";
+            lbPass.Text = "";
+
         }
 
         private void lvUsers_SelectedIndexChanged(object sender, EventArgs e)
@@ -129,26 +142,8 @@ namespace FTP.Server.Forms
             txtUsername.Text = user.UserName;
             txtPassword.Text = ""; // KHÔNG hiện lại pass (vì đang lưu hash) 
             txtHomeDir.Text = user.HomeDirectory;
+            lbPass.Text = "To keep the current password,\nleave this field empty.";
         }
-
-        private void btnAddUser_Click(object sender, EventArgs e)
-        {
-            ResetUserDetail();   // clear form
-            txtUsername.Focus();
-        }
-
-        private void btnEditUser_Click(object sender, EventArgs e)
-        {
-            if (lvUsers.SelectedItems.Count == 0)
-            {
-                MessageBox.Show("Please select a user to edit.");
-                return;
-            }
-
-            // dữ liệu đã được đổ lên ô text khi chọn list rồi, nên ở đây chỉ cần focus
-            txtUsername.Focus();
-        }
-
         private void btnDeleteUser_Click(object sender, EventArgs e)
         {
             if (lvUsers.SelectedItems.Count == 0)
@@ -183,6 +178,7 @@ namespace FTP.Server.Forms
 
             LoadUsersToListView();
             ResetUserDetail();
+
         }
 
         private void btnBrowseHome_Click(object sender, EventArgs e)
@@ -303,6 +299,103 @@ namespace FTP.Server.Forms
         {
             ResetUserDetail();
         }
+        #endregion
+
+        #region Permision
+        private void InitPermissionTab()
+        {
+            if (_userManager == null) return;
+
+
+            // Lấy list user từ UserManager
+            var users = _userManager.GetAllUsers();
+
+            cbbUserPermission.DataSource = null; // reset để binding lại cho sạch
+            cbbUserPermission.DataSource = users;
+            cbbUserPermission.DisplayMember = "UserName";
+            cbbUserPermission.ValueMember = "UserName";
+
+            // Nếu có user thì chọn user đầu tiên và load quyền
+            if (users.Count > 0)
+            {
+                cbbUserPermission.SelectedIndex = 0;
+                LoadPermissionForSelectedUser();
+            }
+            else
+            {
+                // Không có user nào thì clear checkbox
+                LoadPermissionForSelectedUser();
+            }
+        }
+        private void LoadPermissionForSelectedUser()
+        {
+            // Không chọn user nào thì clear hết
+            if (!(cbbUserPermission.SelectedItem is User user))
+            {
+                chkRead.Checked = false;
+                chkWrite.Checked = false;
+                chkDelete.Checked = false;
+                chkCreateDir.Checked = false;
+                chkDeleteDir.Checked = false;
+                return;
+            }
+
+            var perms = user.Permissions;
+
+            // File permissions
+            chkRead.Checked = perms.HasFlag(UserPermissions.Read);
+            chkWrite.Checked = perms.HasFlag(UserPermissions.Write);
+
+
+            chkDelete.Checked = perms.HasFlag(UserPermissions.Delete);
+
+            // Directory permissions
+            chkCreateDir.Checked = perms.HasFlag(UserPermissions.CreateDirectory);
+            chkDeleteDir.Checked = perms.HasFlag(UserPermissions.DeleteDirectory);
+
+        }
+
+        private UserPermissions BuildPermissionsFromUI()
+        {
+            UserPermissions perms = UserPermissions.None;
+
+            // Read  content đi chung
+            if (chkRead.Checked )
+                perms |= UserPermissions.Read;
+
+            // Write  đi chung
+            if (chkWrite.Checked )
+                perms |= UserPermissions.Write;
+
+            if (chkDelete.Checked)
+                perms |= UserPermissions.Delete;
+
+            if (chkCreateDir.Checked)
+                perms |= UserPermissions.CreateDirectory;
+
+            if (chkDeleteDir.Checked)
+                perms |= UserPermissions.DeleteDirectory;
+
+            return perms;
+        }
+        private void SavePermissionForSelectedUser()
+        {
+            if (!(cbbUserPermission.SelectedItem is User user))
+                return;
+
+            var newPerms = BuildPermissionsFromUI();
+
+            user.Permissions = newPerms;
+
+            // Gọi UserManager để update + SaveUsers()
+            _userManager.UpdateUser(user);
+        }
+        private void cbbUserPermission_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            LoadPermissionForSelectedUser();
+        }
+
+
         #endregion
 
         

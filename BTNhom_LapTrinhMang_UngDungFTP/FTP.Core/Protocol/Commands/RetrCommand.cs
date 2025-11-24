@@ -114,7 +114,7 @@ namespace FTP.Core.Protocol.Commands
             {
                 session.CloseDataConnection();
                 session.Status = ClientStatus.Idle;
-                await session.SendResponseAsync(451, "Error during transfer");
+                await session.SendResponseAsync(451, $"Error during transfer: {ex.Message}");
             }
         }
     }

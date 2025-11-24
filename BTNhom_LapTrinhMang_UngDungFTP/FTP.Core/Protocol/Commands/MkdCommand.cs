@@ -60,7 +60,7 @@ namespace FTP.Core.Protocol.Commands
             }
             catch (Exception ex)
             {
-                await session.SendResponseAsync(451, "Error in processing");
+                await session.SendResponseAsync(451, $"Error in processing: {ex.Message}");
             }
         }
     }

@@ -31,8 +31,6 @@ namespace FTP.Server.Forms
         {
             this.groupBoxUser = new System.Windows.Forms.GroupBox();
             this.btnDeleteUser = new System.Windows.Forms.Button();
-            this.btnEditUser = new System.Windows.Forms.Button();
-            this.btnAddUser = new System.Windows.Forms.Button();
             this.lvUsers = new System.Windows.Forms.ListView();
             this.tabUsers = new System.Windows.Forms.TabPage();
             this.groupBoxUserDetail = new System.Windows.Forms.GroupBox();
@@ -48,12 +46,10 @@ namespace FTP.Server.Forms
             this.tabSetting = new System.Windows.Forms.TabControl();
             this.tabPermission = new System.Windows.Forms.TabPage();
             this.groupBoxDirectoryPermission = new System.Windows.Forms.GroupBox();
-            this.chkListDir = new System.Windows.Forms.CheckBox();
             this.chkDeleteDir = new System.Windows.Forms.CheckBox();
             this.chkCreateDir = new System.Windows.Forms.CheckBox();
             this.groupBoxFilePermission = new System.Windows.Forms.GroupBox();
             this.chkDelete = new System.Windows.Forms.CheckBox();
-            this.chkAppend = new System.Windows.Forms.CheckBox();
             this.chkWrite = new System.Windows.Forms.CheckBox();
             this.chkRead = new System.Windows.Forms.CheckBox();
             this.cbbUserPermission = new System.Windows.Forms.ComboBox();
@@ -77,6 +73,9 @@ namespace FTP.Server.Forms
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnOK = new System.Windows.Forms.Button();
             this.btnApply = new System.Windows.Forms.Button();
+            this.lbPass = new System.Windows.Forms.Label();
+            this.clName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.clHomeDir = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.groupBoxUser.SuspendLayout();
             this.tabUsers.SuspendLayout();
             this.groupBoxUserDetail.SuspendLayout();
@@ -94,23 +93,20 @@ namespace FTP.Server.Forms
             // 
             // groupBoxUser
             // 
-            this.groupBoxUser.Controls.Add(this.btnDeleteUser);
-            this.groupBoxUser.Controls.Add(this.btnEditUser);
-            this.groupBoxUser.Controls.Add(this.btnAddUser);
             this.groupBoxUser.Controls.Add(this.lvUsers);
             this.groupBoxUser.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBoxUser.Location = new System.Drawing.Point(3, 6);
             this.groupBoxUser.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.groupBoxUser.Name = "groupBoxUser";
             this.groupBoxUser.Padding = new System.Windows.Forms.Padding(3, 6, 3, 6);
-            this.groupBoxUser.Size = new System.Drawing.Size(871, 289);
+            this.groupBoxUser.Size = new System.Drawing.Size(736, 228);
             this.groupBoxUser.TabIndex = 0;
             this.groupBoxUser.TabStop = false;
             this.groupBoxUser.Text = "User Management";
             // 
             // btnDeleteUser
             // 
-            this.btnDeleteUser.Location = new System.Drawing.Point(542, 230);
+            this.btnDeleteUser.Location = new System.Drawing.Point(343, 206);
             this.btnDeleteUser.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.btnDeleteUser.Name = "btnDeleteUser";
             this.btnDeleteUser.Size = new System.Drawing.Size(120, 47);
@@ -119,38 +115,21 @@ namespace FTP.Server.Forms
             this.btnDeleteUser.UseVisualStyleBackColor = true;
             this.btnDeleteUser.Click += new System.EventHandler(this.btnDeleteUser_Click);
             // 
-            // btnEditUser
-            // 
-            this.btnEditUser.Location = new System.Drawing.Point(210, 230);
-            this.btnEditUser.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
-            this.btnEditUser.Name = "btnEditUser";
-            this.btnEditUser.Size = new System.Drawing.Size(117, 47);
-            this.btnEditUser.TabIndex = 9;
-            this.btnEditUser.Text = "Edit User";
-            this.btnEditUser.UseVisualStyleBackColor = true;
-            this.btnEditUser.Click += new System.EventHandler(this.btnEditUser_Click);
-            // 
-            // btnAddUser
-            // 
-            this.btnAddUser.Location = new System.Drawing.Point(372, 230);
-            this.btnAddUser.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
-            this.btnAddUser.Name = "btnAddUser";
-            this.btnAddUser.Size = new System.Drawing.Size(117, 47);
-            this.btnAddUser.TabIndex = 8;
-            this.btnAddUser.Text = "Add User";
-            this.btnAddUser.UseVisualStyleBackColor = true;
-            this.btnAddUser.Click += new System.EventHandler(this.btnAddUser_Click);
-            // 
             // lvUsers
             // 
+            this.lvUsers.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.clName,
+            this.clHomeDir});
             this.lvUsers.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lvUsers.GridLines = true;
             this.lvUsers.HideSelection = false;
             this.lvUsers.Location = new System.Drawing.Point(3, 26);
             this.lvUsers.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.lvUsers.Name = "lvUsers";
-            this.lvUsers.Size = new System.Drawing.Size(865, 180);
+            this.lvUsers.Size = new System.Drawing.Size(730, 180);
             this.lvUsers.TabIndex = 0;
             this.lvUsers.UseCompatibleStateImageBehavior = false;
+            this.lvUsers.View = System.Windows.Forms.View.Details;
             this.lvUsers.SelectedIndexChanged += new System.EventHandler(this.lvUsers_SelectedIndexChanged);
             // 
             // tabUsers
@@ -161,13 +140,15 @@ namespace FTP.Server.Forms
             this.tabUsers.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.tabUsers.Name = "tabUsers";
             this.tabUsers.Padding = new System.Windows.Forms.Padding(3, 6, 3, 6);
-            this.tabUsers.Size = new System.Drawing.Size(877, 527);
+            this.tabUsers.Size = new System.Drawing.Size(742, 527);
             this.tabUsers.TabIndex = 0;
             this.tabUsers.Text = "Users";
             this.tabUsers.UseVisualStyleBackColor = true;
             // 
             // groupBoxUserDetail
             // 
+            this.groupBoxUserDetail.Controls.Add(this.lbPass);
+            this.groupBoxUserDetail.Controls.Add(this.btnDeleteUser);
             this.groupBoxUserDetail.Controls.Add(this.btnCancelUser);
             this.groupBoxUserDetail.Controls.Add(this.txtHomeDir);
             this.groupBoxUserDetail.Controls.Add(this.btnSaveUser);
@@ -178,34 +159,34 @@ namespace FTP.Server.Forms
             this.groupBoxUserDetail.Controls.Add(this.label1);
             this.groupBoxUserDetail.Controls.Add(this.txtUsername);
             this.groupBoxUserDetail.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.groupBoxUserDetail.Location = new System.Drawing.Point(3, 298);
+            this.groupBoxUserDetail.Location = new System.Drawing.Point(3, 243);
             this.groupBoxUserDetail.Name = "groupBoxUserDetail";
-            this.groupBoxUserDetail.Size = new System.Drawing.Size(871, 223);
+            this.groupBoxUserDetail.Size = new System.Drawing.Size(736, 278);
             this.groupBoxUserDetail.TabIndex = 1;
             this.groupBoxUserDetail.TabStop = false;
             this.groupBoxUserDetail.Text = "User Detail";
             // 
             // btnCancelUser
             // 
-            this.btnCancelUser.Location = new System.Drawing.Point(542, 167);
+            this.btnCancelUser.Location = new System.Drawing.Point(514, 206);
             this.btnCancelUser.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.btnCancelUser.Name = "btnCancelUser";
             this.btnCancelUser.Size = new System.Drawing.Size(120, 47);
             this.btnCancelUser.TabIndex = 13;
-            this.btnCancelUser.Text = "Cancel User";
+            this.btnCancelUser.Text = "Reset";
             this.btnCancelUser.UseVisualStyleBackColor = true;
             this.btnCancelUser.Click += new System.EventHandler(this.btnCancelUser_Click);
             // 
             // txtHomeDir
             // 
-            this.txtHomeDir.Location = new System.Drawing.Point(180, 115);
+            this.txtHomeDir.Location = new System.Drawing.Point(165, 140);
             this.txtHomeDir.Name = "txtHomeDir";
             this.txtHomeDir.Size = new System.Drawing.Size(425, 27);
             this.txtHomeDir.TabIndex = 5;
             // 
             // btnSaveUser
             // 
-            this.btnSaveUser.Location = new System.Drawing.Point(372, 167);
+            this.btnSaveUser.Location = new System.Drawing.Point(188, 206);
             this.btnSaveUser.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.btnSaveUser.Name = "btnSaveUser";
             this.btnSaveUser.Size = new System.Drawing.Size(117, 47);
@@ -216,7 +197,7 @@ namespace FTP.Server.Forms
             // 
             // btnBrowseHome
             // 
-            this.btnBrowseHome.Location = new System.Drawing.Point(210, 167);
+            this.btnBrowseHome.Location = new System.Drawing.Point(24, 206);
             this.btnBrowseHome.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.btnBrowseHome.Name = "btnBrowseHome";
             this.btnBrowseHome.Size = new System.Drawing.Size(117, 47);
@@ -227,7 +208,7 @@ namespace FTP.Server.Forms
             // 
             // txtPassword
             // 
-            this.txtPassword.Location = new System.Drawing.Point(180, 78);
+            this.txtPassword.Location = new System.Drawing.Point(165, 103);
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.Size = new System.Drawing.Size(425, 27);
             this.txtPassword.TabIndex = 4;
@@ -235,7 +216,7 @@ namespace FTP.Server.Forms
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(35, 120);
+            this.label3.Location = new System.Drawing.Point(20, 145);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(71, 22);
             this.label3.TabIndex = 3;
@@ -244,7 +225,7 @@ namespace FTP.Server.Forms
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(35, 83);
+            this.label2.Location = new System.Drawing.Point(20, 108);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(71, 22);
             this.label2.TabIndex = 2;
@@ -253,7 +234,7 @@ namespace FTP.Server.Forms
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(35, 40);
+            this.label1.Location = new System.Drawing.Point(20, 65);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(79, 22);
             this.label1.TabIndex = 1;
@@ -261,7 +242,7 @@ namespace FTP.Server.Forms
             // 
             // txtUsername
             // 
-            this.txtUsername.Location = new System.Drawing.Point(180, 40);
+            this.txtUsername.Location = new System.Drawing.Point(165, 65);
             this.txtUsername.Name = "txtUsername";
             this.txtUsername.Size = new System.Drawing.Size(425, 27);
             this.txtUsername.TabIndex = 0;
@@ -276,7 +257,7 @@ namespace FTP.Server.Forms
             this.tabSetting.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.tabSetting.Name = "tabSetting";
             this.tabSetting.SelectedIndex = 0;
-            this.tabSetting.Size = new System.Drawing.Size(885, 562);
+            this.tabSetting.Size = new System.Drawing.Size(750, 562);
             this.tabSetting.TabIndex = 4;
             // 
             // tabPermission
@@ -289,38 +270,27 @@ namespace FTP.Server.Forms
             this.tabPermission.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.tabPermission.Name = "tabPermission";
             this.tabPermission.Padding = new System.Windows.Forms.Padding(3, 6, 3, 6);
-            this.tabPermission.Size = new System.Drawing.Size(877, 527);
+            this.tabPermission.Size = new System.Drawing.Size(742, 527);
             this.tabPermission.TabIndex = 1;
             this.tabPermission.Text = "Permission";
             this.tabPermission.UseVisualStyleBackColor = true;
             // 
             // groupBoxDirectoryPermission
             // 
-            this.groupBoxDirectoryPermission.Controls.Add(this.chkListDir);
             this.groupBoxDirectoryPermission.Controls.Add(this.chkDeleteDir);
             this.groupBoxDirectoryPermission.Controls.Add(this.chkCreateDir);
             this.groupBoxDirectoryPermission.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.groupBoxDirectoryPermission.Location = new System.Drawing.Point(3, 306);
             this.groupBoxDirectoryPermission.Name = "groupBoxDirectoryPermission";
-            this.groupBoxDirectoryPermission.Size = new System.Drawing.Size(871, 215);
+            this.groupBoxDirectoryPermission.Size = new System.Drawing.Size(736, 215);
             this.groupBoxDirectoryPermission.TabIndex = 3;
             this.groupBoxDirectoryPermission.TabStop = false;
             this.groupBoxDirectoryPermission.Text = "Directory Permisson";
             // 
-            // chkListDir
-            // 
-            this.chkListDir.AutoSize = true;
-            this.chkListDir.Location = new System.Drawing.Point(57, 164);
-            this.chkListDir.Name = "chkListDir";
-            this.chkListDir.Size = new System.Drawing.Size(105, 26);
-            this.chkListDir.TabIndex = 14;
-            this.chkListDir.Text = "List Content";
-            this.chkListDir.UseVisualStyleBackColor = true;
-            // 
             // chkDeleteDir
             // 
             this.chkDeleteDir.AutoSize = true;
-            this.chkDeleteDir.Location = new System.Drawing.Point(57, 112);
+            this.chkDeleteDir.Location = new System.Drawing.Point(57, 130);
             this.chkDeleteDir.Name = "chkDeleteDir";
             this.chkDeleteDir.Size = new System.Drawing.Size(132, 26);
             this.chkDeleteDir.TabIndex = 13;
@@ -330,7 +300,7 @@ namespace FTP.Server.Forms
             // chkCreateDir
             // 
             this.chkCreateDir.AutoSize = true;
-            this.chkCreateDir.Location = new System.Drawing.Point(57, 56);
+            this.chkCreateDir.Location = new System.Drawing.Point(57, 69);
             this.chkCreateDir.Name = "chkCreateDir";
             this.chkCreateDir.Size = new System.Drawing.Size(134, 26);
             this.chkCreateDir.TabIndex = 12;
@@ -340,7 +310,6 @@ namespace FTP.Server.Forms
             // groupBoxFilePermission
             // 
             this.groupBoxFilePermission.Controls.Add(this.chkDelete);
-            this.groupBoxFilePermission.Controls.Add(this.chkAppend);
             this.groupBoxFilePermission.Controls.Add(this.chkWrite);
             this.groupBoxFilePermission.Controls.Add(this.chkRead);
             this.groupBoxFilePermission.Location = new System.Drawing.Point(3, 128);
@@ -353,22 +322,12 @@ namespace FTP.Server.Forms
             // chkDelete
             // 
             this.chkDelete.AutoSize = true;
-            this.chkDelete.Location = new System.Drawing.Point(712, 78);
+            this.chkDelete.Location = new System.Drawing.Point(456, 78);
             this.chkDelete.Name = "chkDelete";
             this.chkDelete.Size = new System.Drawing.Size(72, 26);
             this.chkDelete.TabIndex = 11;
             this.chkDelete.Text = "Delete";
             this.chkDelete.UseVisualStyleBackColor = true;
-            // 
-            // chkAppend
-            // 
-            this.chkAppend.AutoSize = true;
-            this.chkAppend.Location = new System.Drawing.Point(471, 78);
-            this.chkAppend.Name = "chkAppend";
-            this.chkAppend.Size = new System.Drawing.Size(81, 26);
-            this.chkAppend.TabIndex = 10;
-            this.chkAppend.Text = "Append";
-            this.chkAppend.UseVisualStyleBackColor = true;
             // 
             // chkWrite
             // 
@@ -397,6 +356,7 @@ namespace FTP.Server.Forms
             this.cbbUserPermission.Name = "cbbUserPermission";
             this.cbbUserPermission.Size = new System.Drawing.Size(198, 30);
             this.cbbUserPermission.TabIndex = 1;
+            this.cbbUserPermission.SelectedIndexChanged += new System.EventHandler(this.cbbUserPermission_SelectedIndexChanged);
             // 
             // label4
             // 
@@ -414,7 +374,7 @@ namespace FTP.Server.Forms
             this.tabAdvanced.Location = new System.Drawing.Point(4, 31);
             this.tabAdvanced.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.tabAdvanced.Name = "tabAdvanced";
-            this.tabAdvanced.Size = new System.Drawing.Size(877, 527);
+            this.tabAdvanced.Size = new System.Drawing.Size(742, 527);
             this.tabAdvanced.TabIndex = 2;
             this.tabAdvanced.Text = "Advanced";
             this.tabAdvanced.UseVisualStyleBackColor = true;
@@ -431,7 +391,7 @@ namespace FTP.Server.Forms
             this.groupBoxIPFilltering.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.groupBoxIPFilltering.Location = new System.Drawing.Point(0, 210);
             this.groupBoxIPFilltering.Name = "groupBoxIPFilltering";
-            this.groupBoxIPFilltering.Size = new System.Drawing.Size(877, 317);
+            this.groupBoxIPFilltering.Size = new System.Drawing.Size(742, 317);
             this.groupBoxIPFilltering.TabIndex = 1;
             this.groupBoxIPFilltering.TabStop = false;
             this.groupBoxIPFilltering.Text = "IP Filltering";
@@ -450,7 +410,7 @@ namespace FTP.Server.Forms
             // btnAddIP
             // 
             this.btnAddIP.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.btnAddIP.Location = new System.Drawing.Point(412, 253);
+            this.btnAddIP.Location = new System.Drawing.Point(403, 253);
             this.btnAddIP.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.btnAddIP.Name = "btnAddIP";
             this.btnAddIP.Size = new System.Drawing.Size(81, 37);
@@ -516,7 +476,7 @@ namespace FTP.Server.Forms
             this.groupBoxConnectLimit.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBoxConnectLimit.Location = new System.Drawing.Point(0, 0);
             this.groupBoxConnectLimit.Name = "groupBoxConnectLimit";
-            this.groupBoxConnectLimit.Size = new System.Drawing.Size(877, 204);
+            this.groupBoxConnectLimit.Size = new System.Drawing.Size(742, 204);
             this.groupBoxConnectLimit.TabIndex = 0;
             this.groupBoxConnectLimit.TabStop = false;
             this.groupBoxConnectLimit.Text = "Connection Limits";
@@ -587,7 +547,7 @@ namespace FTP.Server.Forms
             // btnCancel
             // 
             this.btnCancel.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.btnCancel.Location = new System.Drawing.Point(517, 574);
+            this.btnCancel.Location = new System.Drawing.Point(450, 574);
             this.btnCancel.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(95, 47);
@@ -599,7 +559,7 @@ namespace FTP.Server.Forms
             // btnOK
             // 
             this.btnOK.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.btnOK.Location = new System.Drawing.Point(379, 574);
+            this.btnOK.Location = new System.Drawing.Point(312, 574);
             this.btnOK.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(95, 47);
@@ -611,7 +571,7 @@ namespace FTP.Server.Forms
             // btnApply
             // 
             this.btnApply.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.btnApply.Location = new System.Drawing.Point(239, 574);
+            this.btnApply.Location = new System.Drawing.Point(172, 574);
             this.btnApply.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
             this.btnApply.Name = "btnApply";
             this.btnApply.Size = new System.Drawing.Size(95, 47);
@@ -620,11 +580,31 @@ namespace FTP.Server.Forms
             this.btnApply.UseVisualStyleBackColor = true;
             this.btnApply.Click += new System.EventHandler(this.btnApply_Click);
             // 
+            // lbPass
+            // 
+            this.lbPass.AutoSize = true;
+            this.lbPass.Location = new System.Drawing.Point(526, 95);
+            this.lbPass.Name = "lbPass";
+            this.lbPass.Size = new System.Drawing.Size(14, 22);
+            this.lbPass.TabIndex = 14;
+            this.lbPass.Text = ".";
+            // 
+            // clName
+            // 
+            this.clName.Text = "Name";
+            this.clName.Width = 153;
+            // 
+            // clHomeDir
+            // 
+            this.clHomeDir.Text = "Home directory";
+            this.clHomeDir.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.clHomeDir.Width = 347;
+            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 22F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(885, 636);
+            this.ClientSize = new System.Drawing.Size(750, 636);
             this.Controls.Add(this.tabSetting);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOK);
@@ -668,8 +648,6 @@ namespace FTP.Server.Forms
         private System.Windows.Forms.Button btnOK;
         private System.Windows.Forms.Button btnApply;
         private System.Windows.Forms.Button btnDeleteUser;
-        private System.Windows.Forms.Button btnEditUser;
-        private System.Windows.Forms.Button btnAddUser;
         private System.Windows.Forms.GroupBox groupBoxUserDetail;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
@@ -684,11 +662,9 @@ namespace FTP.Server.Forms
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.GroupBox groupBoxDirectoryPermission;
         private System.Windows.Forms.GroupBox groupBoxFilePermission;
-        private System.Windows.Forms.CheckBox chkListDir;
         private System.Windows.Forms.CheckBox chkDeleteDir;
         private System.Windows.Forms.CheckBox chkCreateDir;
         private System.Windows.Forms.CheckBox chkDelete;
-        private System.Windows.Forms.CheckBox chkAppend;
         private System.Windows.Forms.CheckBox chkWrite;
         private System.Windows.Forms.CheckBox chkRead;
         private System.Windows.Forms.GroupBox groupBoxIPFilltering;
@@ -706,5 +682,8 @@ namespace FTP.Server.Forms
         private System.Windows.Forms.Button btnRemoveIP;
         private System.Windows.Forms.Button btnAddIP;
         private System.Windows.Forms.TextBox txtIP;
+        private System.Windows.Forms.Label lbPass;
+        private System.Windows.Forms.ColumnHeader clName;
+        private System.Windows.Forms.ColumnHeader clHomeDir;
     }
 }

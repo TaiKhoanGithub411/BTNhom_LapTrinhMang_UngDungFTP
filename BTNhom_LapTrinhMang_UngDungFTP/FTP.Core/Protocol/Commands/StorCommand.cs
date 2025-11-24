@@ -137,7 +137,7 @@ namespace FTP.Core.Protocol.Commands
                     try { File.Delete(physicalPath); } catch { }
                 }
 
-                await session.SendResponseAsync(451, "Error during transfer");
+                await session.SendResponseAsync(451, $"Error during transfer: {ex.Message}");
             }
         }
     }

@@ -35,7 +35,7 @@ namespace FTP.Core.Protocol.Commands
             }
             catch (Exception ex)
             {
-                await session.SendResponseAsync(425, "Can't open passive connection");
+                await session.SendResponseAsync(425, $"Can't open passive connection: {ex.Message}");
             }
         }
     }

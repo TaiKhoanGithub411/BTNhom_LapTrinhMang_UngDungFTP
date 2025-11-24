@@ -43,7 +43,7 @@ namespace FTP.Core.Protocol.Commands
             }
             catch (Exception ex)
             {
-                await session.SendResponseAsync(501, "Syntax error in PORT command");
+                await session.SendResponseAsync(501, $"Syntax error in PORT command: {ex.Message}");
             }
         }
     }
