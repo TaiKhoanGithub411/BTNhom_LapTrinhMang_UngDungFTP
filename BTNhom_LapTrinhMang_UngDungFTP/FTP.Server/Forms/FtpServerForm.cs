@@ -26,9 +26,16 @@ namespace FTP.Server
             string usersFilePath = GetUsersFilePath();
             var userManager = new UserManager(usersFilePath);
 
-            // Khởi tạo các đối tượng
-            _config = ServerConfiguration.CreateDefault();
-            _config.UserManager = userManager;
+            /* // Khởi tạo các đối tượng
+             _config = ServerConfiguration.CreateDefault();
+             _config.UserManager = userManager;
+             _sessionManager = new SessionManager();
+             _ftpServer = new FtpServer(_config, _sessionManager);*/
+            string configFilePath = GetConfigFilePath();
+
+            // Thử load config từ file, nếu chưa có thì dùng default
+            _config = ServerConfiguration.LoadFromFile(configFilePath, userManager);
+
             _sessionManager = new SessionManager();
             _ftpServer = new FtpServer(_config, _sessionManager);
 
@@ -319,7 +326,23 @@ namespace FTP.Server
                 else
                 {
                     e.Cancel = true; // Hủy việc đóng form
+                    return;
                 }
+            }
+
+            // 💾 Lưu config Advanced xuống file
+            try
+            {
+                if (_config != null)
+                {
+                    string configFilePath = GetConfigFilePath();
+                    _config.SaveToFile(configFilePath);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to save config: " + ex.Message,
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         private string GetUsersFilePath()
@@ -349,16 +372,31 @@ namespace FTP.Server
             // Trả về đường dẫn đầy đủ tới users.json
             return Path.Combine(dataFolder, "users.json");
         }
+        private string GetConfigFilePath()
+        {
+            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            string dataFolder = Path.Combine(baseDirectory, "Data");
+
+            if (!Directory.Exists(dataFolder))
+            {
+                try
+                {
+                    Directory.CreateDirectory(dataFolder);
+                }
+                catch
+                {
+                    // fallback: lưu ngay cạnh exe
+                    return Path.Combine(baseDirectory, "serverConfig.txt");
+                }
+            }
+
+            return Path.Combine(dataFolder, "serverConfig.txt");
+        }
+
 
         private void btnSetting_Click(object sender, EventArgs e)
         {
-            if (_config == null)
-            {
-                MessageBox.Show("Server configuration not ready yet.");
-                return;
-            }
-
-            using (var frm = new SettingsForm(_config)) // *** TRUYỀN _config VÀO ĐÂY ***
+            using (var frm = new SettingsForm(_config))
             {
                 frm.ShowDialog();
             }

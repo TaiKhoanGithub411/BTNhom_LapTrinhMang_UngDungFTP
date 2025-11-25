@@ -79,5 +79,78 @@ namespace FTP.Core.Server
                 BannedIPs = new List<string>(this.BannedIPs)
             };
         }
+
+
+        public void SaveToFile(string path)
+        {
+            try
+            {
+                var dir = Path.GetDirectoryName(path);
+                if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
+
+                using (var writer = new StreamWriter(path, false))
+                {
+                    writer.WriteLine(Port);
+                    writer.WriteLine(RootFolder ?? "");
+                    writer.WriteLine(MaxConnections);
+                    writer.WriteLine(MaxConnectionsPerUser);
+                    writer.WriteLine(LoginTimeout);
+                    writer.WriteLine(AllowAllConnections);
+                    writer.WriteLine(string.Join(";", BannedIPs ?? new List<string>()));
+                }
+            }
+            catch
+            {
+                // Có thể log lỗi nếu muốn, còn không thì bỏ trống cũng được
+            }
+        }
+
+        public static ServerConfiguration LoadFromFile(string path, UserManager userManager)
+        {
+            // mặc định
+            var config = CreateDefault();
+            config.UserManager = userManager;
+
+            if (!File.Exists(path))
+                return config;
+
+            try
+            {
+                var lines = File.ReadAllLines(path);
+                int i = 0;
+
+                if (lines.Length > i && int.TryParse(lines[i++], out int port))
+                    config.Port = port;
+
+                if (lines.Length > i)
+                    config.RootFolder = lines[i++];
+
+                if (lines.Length > i && int.TryParse(lines[i++], out int maxConn))
+                    config.MaxConnections = maxConn;
+
+                if (lines.Length > i && int.TryParse(lines[i++], out int maxPerUser))
+                    config.MaxConnectionsPerUser = maxPerUser;
+
+                if (lines.Length > i && int.TryParse(lines[i++], out int timeout))
+                    config.LoginTimeout = timeout;
+
+                if (lines.Length > i && bool.TryParse(lines[i++], out bool allowAll))
+                    config.AllowAllConnections = allowAll;
+
+                if (lines.Length > i)
+                {
+                    var ips = lines[i++]
+                        .Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                    config.BannedIPs = new List<string>(ips);
+                }
+            }
+            catch
+            {
+                // Nếu file lỗi format thì cứ dùng default cho lành
+            }
+
+            return config;
+        }
     }
 }

@@ -99,6 +99,16 @@ namespace FTP.Core.Server
         {
             return _sessions.Count >= maxConnections;
         }
+        public bool IsUserConnectionLimitReached(string username, int maxPerUser)
+        {
+            if (string.IsNullOrWhiteSpace(username) || maxPerUser <= 0)
+                return false;
+
+            var count = _sessions.Values.Count(s =>
+                string.Equals(s.Username, username, StringComparison.OrdinalIgnoreCase));
+
+            return count >= maxPerUser;
+        }
 
         public bool DisconnectSession(string sessionId)
         {

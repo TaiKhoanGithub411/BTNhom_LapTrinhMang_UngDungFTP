@@ -30,10 +30,13 @@ namespace FTP.Server.Forms
         private void InitializeComponent()
         {
             this.groupBoxUser = new System.Windows.Forms.GroupBox();
-            this.btnDeleteUser = new System.Windows.Forms.Button();
             this.lvUsers = new System.Windows.Forms.ListView();
+            this.clName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.clHomeDir = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.btnDeleteUser = new System.Windows.Forms.Button();
             this.tabUsers = new System.Windows.Forms.TabPage();
             this.groupBoxUserDetail = new System.Windows.Forms.GroupBox();
+            this.lbPass = new System.Windows.Forms.Label();
             this.btnCancelUser = new System.Windows.Forms.Button();
             this.txtHomeDir = new System.Windows.Forms.TextBox();
             this.btnSaveUser = new System.Windows.Forms.Button();
@@ -73,9 +76,6 @@ namespace FTP.Server.Forms
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnOK = new System.Windows.Forms.Button();
             this.btnApply = new System.Windows.Forms.Button();
-            this.lbPass = new System.Windows.Forms.Label();
-            this.clName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.clHomeDir = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.groupBoxUser.SuspendLayout();
             this.tabUsers.SuspendLayout();
             this.groupBoxUserDetail.SuspendLayout();
@@ -104,17 +104,6 @@ namespace FTP.Server.Forms
             this.groupBoxUser.TabStop = false;
             this.groupBoxUser.Text = "User Management";
             // 
-            // btnDeleteUser
-            // 
-            this.btnDeleteUser.Location = new System.Drawing.Point(343, 206);
-            this.btnDeleteUser.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
-            this.btnDeleteUser.Name = "btnDeleteUser";
-            this.btnDeleteUser.Size = new System.Drawing.Size(120, 47);
-            this.btnDeleteUser.TabIndex = 10;
-            this.btnDeleteUser.Text = "Delete User";
-            this.btnDeleteUser.UseVisualStyleBackColor = true;
-            this.btnDeleteUser.Click += new System.EventHandler(this.btnDeleteUser_Click);
-            // 
             // lvUsers
             // 
             this.lvUsers.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
@@ -131,6 +120,27 @@ namespace FTP.Server.Forms
             this.lvUsers.UseCompatibleStateImageBehavior = false;
             this.lvUsers.View = System.Windows.Forms.View.Details;
             this.lvUsers.SelectedIndexChanged += new System.EventHandler(this.lvUsers_SelectedIndexChanged);
+            // 
+            // clName
+            // 
+            this.clName.Text = "Name";
+            this.clName.Width = 153;
+            // 
+            // clHomeDir
+            // 
+            this.clHomeDir.Text = "Home directory";
+            this.clHomeDir.Width = 347;
+            // 
+            // btnDeleteUser
+            // 
+            this.btnDeleteUser.Location = new System.Drawing.Point(343, 206);
+            this.btnDeleteUser.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
+            this.btnDeleteUser.Name = "btnDeleteUser";
+            this.btnDeleteUser.Size = new System.Drawing.Size(120, 47);
+            this.btnDeleteUser.TabIndex = 10;
+            this.btnDeleteUser.Text = "Delete User";
+            this.btnDeleteUser.UseVisualStyleBackColor = true;
+            this.btnDeleteUser.Click += new System.EventHandler(this.btnDeleteUser_Click);
             // 
             // tabUsers
             // 
@@ -165,6 +175,15 @@ namespace FTP.Server.Forms
             this.groupBoxUserDetail.TabIndex = 1;
             this.groupBoxUserDetail.TabStop = false;
             this.groupBoxUserDetail.Text = "User Detail";
+            // 
+            // lbPass
+            // 
+            this.lbPass.AutoSize = true;
+            this.lbPass.Location = new System.Drawing.Point(526, 95);
+            this.lbPass.Name = "lbPass";
+            this.lbPass.Size = new System.Drawing.Size(14, 22);
+            this.lbPass.TabIndex = 14;
+            this.lbPass.Text = ".";
             // 
             // btnCancelUser
             // 
@@ -406,6 +425,7 @@ namespace FTP.Server.Forms
             this.btnRemoveIP.TabIndex = 9;
             this.btnRemoveIP.Text = "Remove IP";
             this.btnRemoveIP.UseVisualStyleBackColor = true;
+            this.btnRemoveIP.Click += new System.EventHandler(this.btnRemoveIP_Click);
             // 
             // btnAddIP
             // 
@@ -417,6 +437,7 @@ namespace FTP.Server.Forms
             this.btnAddIP.TabIndex = 8;
             this.btnAddIP.Text = "Add IP";
             this.btnAddIP.UseVisualStyleBackColor = true;
+            this.btnAddIP.Click += new System.EventHandler(this.btnAddIP_Click);
             // 
             // txtIP
             // 
@@ -579,26 +600,6 @@ namespace FTP.Server.Forms
             this.btnApply.Text = "Apply";
             this.btnApply.UseVisualStyleBackColor = true;
             this.btnApply.Click += new System.EventHandler(this.btnApply_Click);
-            // 
-            // lbPass
-            // 
-            this.lbPass.AutoSize = true;
-            this.lbPass.Location = new System.Drawing.Point(526, 95);
-            this.lbPass.Name = "lbPass";
-            this.lbPass.Size = new System.Drawing.Size(14, 22);
-            this.lbPass.TabIndex = 14;
-            this.lbPass.Text = ".";
-            // 
-            // clName
-            // 
-            this.clName.Text = "Name";
-            this.clName.Width = 153;
-            // 
-            // clHomeDir
-            // 
-            this.clHomeDir.Text = "Home directory";
-            this.clHomeDir.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.clHomeDir.Width = 347;
             // 
             // SettingsForm
             // 

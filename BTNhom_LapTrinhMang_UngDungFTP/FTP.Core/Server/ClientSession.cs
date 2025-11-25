@@ -114,6 +114,17 @@ namespace FTP.Core.Server
                 // Vòng lặp chạy liên tục để đọc commands
                 while (!cancellationToken.IsCancellationRequested && _controlClient.Connected)
                 {
+                    // === LOGIN TIMEOUT từ tab Advanced ===
+                    if (!IsAuthenticated)
+                    {
+                        var lifetime = DateTime.Now - ConnectedTime;
+                        if (lifetime.TotalSeconds > _configuration.LoginTimeout)
+                        {
+                            await SendResponseAsync(421, "Login timeout. Closing connection.");
+                            LogMessage?.Invoke($"[{SessionId}] Login timeout exceeded ({lifetime.TotalSeconds:F0}s). Session closed.");
+                            break;
+                        }
+                    }
                     // Đọc command từ client
                     string commandLine = await _reader.ReadLineAsync();
 

@@ -34,6 +34,20 @@ namespace FTP.Core.Server
 
                     // Tạo ClientSession
                     var clientSession = new ClientSession(tcpClient, _configuration);
+                    // === IP FILTERING từ tab Advanced ===
+                    if (!_configuration.AllowAllConnections &&
+                        _configuration.BannedIPs != null &&
+                        _configuration.BannedIPs.Contains(clientSession.ClientIPAddress))
+                    {
+                        LogMessage?.Invoke($"Blocked IP: {clientSession.ClientIPAddress} (in banned list)");
+                        try
+                        {
+                            await clientSession.SendResponseAsync(421, "Your IP is banned.");
+                        }
+                        catch { }
+                        clientSession.Close();
+                        continue;
+                    }
 
                     // Subscribe vào event log
                     clientSession.LogMessage += (msg) => LogMessage?.Invoke(msg);

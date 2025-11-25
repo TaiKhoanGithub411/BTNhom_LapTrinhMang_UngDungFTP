@@ -92,17 +92,12 @@ namespace FTP.Server.Forms
 
             InitUserManagementUI();
             InitPermissionTab();
+            InitAdvancedTab();
         }
         private void InitUserManagementUI()
         {
-            SetupUserListView();
             LoadUsersToListView();
             ResetUserDetail();
-        }
-
-        private void SetupUserListView()
-        {
-            lvUsers.Columns.Clear();
         }
 
         private void LoadUsersToListView()
@@ -398,6 +393,72 @@ namespace FTP.Server.Forms
 
         #endregion
 
-        
+        #region Advanced
+        private void InitAdvancedTab()
+        {
+            if (_config == null) return;
+
+            // Connection limits
+            numMaxConnections.Value = _config.MaxConnections;
+            numMaxConnsPerUser.Value = _config.MaxConnectionsPerUser;
+            numLoginTimeOut.Value = _config.LoginTimeout;
+
+            // IP filter mode
+            if (_config.AllowAllConnections)
+                rdAllowAll.Checked = true;
+            else
+                rdDenySelected.Checked = true;
+
+            // Banned IP list
+            lstBannedIPs.Items.Clear();
+            if (_config.BannedIPs != null)
+            {
+                foreach (var ip in _config.BannedIPs)
+                {
+                    lstBannedIPs.Items.Add(ip);
+                }
+            }
+        }
+
+        #endregion
+
+        private void btnAddIP_Click(object sender, EventArgs e)
+        {
+            var ipText = txtIP.Text.Trim();
+            if (string.IsNullOrEmpty(ipText))
+            {
+                MessageBox.Show("Please enter an IP address.");
+                return;
+            }
+
+            // Validate IP format
+            if (!IPAddress.TryParse(ipText, out _))
+            {
+                MessageBox.Show("Invalid IP address format.");
+                return;
+            }
+
+            // Không thêm trùng
+            if (!lstBannedIPs.Items.Contains(ipText))
+            {
+                lstBannedIPs.Items.Add(ipText);
+                txtIP.Clear();
+            }
+            else
+            {
+                MessageBox.Show("This IP is already in the list.");
+            }
+        }
+
+        private void btnRemoveIP_Click(object sender, EventArgs e)
+        {
+            if (lstBannedIPs.SelectedItem == null)
+            {
+                MessageBox.Show("Please select an IP to remove.");
+                return;
+            }
+
+            lstBannedIPs.Items.Remove(lstBannedIPs.SelectedItem);
+        }
     }
 }
