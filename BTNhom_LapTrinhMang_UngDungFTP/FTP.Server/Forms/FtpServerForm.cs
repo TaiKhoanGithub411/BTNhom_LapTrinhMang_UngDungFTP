@@ -5,7 +5,7 @@ using System.Windows.Forms;
 using FTP.Core.Server;
 using FTP.Core.Enum;
 using FTP.Core.Authentication;
-
+using FTP.Core.Model;
 namespace FTP.Server
 {
     public partial class FtpServerForm : Form

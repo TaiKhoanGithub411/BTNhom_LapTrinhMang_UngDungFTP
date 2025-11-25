@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using FTP.Core.Authentication;
+using FTP.Core.Model;
 
 namespace FTP.Core.Server
 {

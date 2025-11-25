@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-
-namespace FTP.Core.Authentication
+using FTP.Core.Authentication;
+namespace FTP.Core.Model
 {
     // Quản lý danh sách users và thao tác với user database.
     public class UserManager

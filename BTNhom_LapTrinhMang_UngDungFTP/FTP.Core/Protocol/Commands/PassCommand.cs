@@ -4,7 +4,7 @@ using FTP.Core.Protocol.Commands.Base;
 using FTP.Core.Server;
 using FTP.Core.Authentication;
 using System.IO;
-
+using FTP.Core.Model;
 namespace FTP.Core.Protocol.Commands
 {
     public class PassCommand : IFtpCommand
