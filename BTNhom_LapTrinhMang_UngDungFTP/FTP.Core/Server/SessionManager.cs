@@ -20,10 +20,10 @@ namespace FTP.Core.Server
             _sessions = new ConcurrentDictionary<string, ClientSession>();
         }
 
-        /// <summary>
+
         /// Thêm session mới vào danh sách quản lý.
         /// Xử lý trùng lặp SessionId bằng cách thêm suffix.
-        /// </summary>
+
         public bool AddSession(ClientSession session)
         {
             if (session == null)
@@ -65,9 +65,9 @@ namespace FTP.Core.Server
             // =============================================
         }
 
-        /// <summary>
+
         /// Xóa session khỏi danh sách quản lý.
-        /// </summary>
+
         public bool RemoveSession(string sessionId)
         {
             if (string.IsNullOrWhiteSpace(sessionId))

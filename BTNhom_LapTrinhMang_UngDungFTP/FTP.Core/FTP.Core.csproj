@@ -76,6 +76,9 @@
     <Compile Include="Authentication\PermissionChecker.cs" />
     <Compile Include="Client\FtpClient.cs" />
     <Compile Include="Client\FtpConnection.cs" />
+    <Compile Include="DataTransfer\DownloadManager.cs" />
+    <Compile Include="DataTransfer\TransferQueue.cs" />
+    <Compile Include="DataTransfer\UploadManager.cs" />
     <Compile Include="Enum\TransferStatus.cs" />
     <Compile Include="Enum\TransferType.cs" />
     <Compile Include="Helpers\FtpResponseParser.cs" />
