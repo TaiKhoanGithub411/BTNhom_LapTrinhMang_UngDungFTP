@@ -74,7 +74,19 @@
     <Compile Include="Authentication\PasswordHelper.cs" />
     <Compile Include="Authentication\PathMapper.cs" />
     <Compile Include="Authentication\PermissionChecker.cs" />
-    <Compile Include="Authentication\User.cs" />
+    <Compile Include="Client\FtpClient.cs" />
+    <Compile Include="Client\FtpConnection.cs" />
+    <Compile Include="DataTransfer\DownloadManager.cs" />
+    <Compile Include="DataTransfer\TransferQueue.cs" />
+    <Compile Include="DataTransfer\UploadManager.cs" />
+    <Compile Include="Enum\TransferStatus.cs" />
+    <Compile Include="Enum\TransferType.cs" />
+    <Compile Include="Helpers\FtpResponseParser.cs" />
+    <Compile Include="Helpers\PathHelper.cs" />
+    <Compile Include="Model\ConnectionInfo.cs" />
+    <Compile Include="Model\FtpFileItem.cs" />
+    <Compile Include="Model\TransferItem.cs" />
+    <Compile Include="Model\User.cs" />
     <Compile Include="Authentication\UserManager.cs" />
     <Compile Include="Authentication\UserPermissions.cs" />
     <Compile Include="Constants\FtpConstants.cs" />
@@ -107,6 +119,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\System.ValueTuple.4.6.1\build\net471\System.ValueTuple.targets" Condition="Exists('..\packages\System.ValueTuple.4.6.1\build\net471\System.ValueTuple.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

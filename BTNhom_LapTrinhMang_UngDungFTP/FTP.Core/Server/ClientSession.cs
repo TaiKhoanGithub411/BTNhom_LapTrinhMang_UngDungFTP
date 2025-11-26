@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using FTP.Core.Protocol;
 using FTP.Core.Constants;
 using FTP.Core.Authentication;
+using FTP.Core.Models;
 namespace FTP.Core.Server
 {
     //Đại diện cho một phiên kết nối của client - Control connection và xử lý FTP command
