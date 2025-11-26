@@ -83,11 +83,11 @@
     <Compile Include="Enum\TransferType.cs" />
     <Compile Include="Helpers\FtpResponseParser.cs" />
     <Compile Include="Helpers\PathHelper.cs" />
-    <Compile Include="Models\ConnectionInfo.cs" />
-    <Compile Include="Models\FtpFileItem.cs" />
-    <Compile Include="Models\TransferItem.cs" />
-    <Compile Include="Models\User.cs" />
-    <Compile Include="Models\UserManager.cs" />
+    <Compile Include="Model\ConnectionInfo.cs" />
+    <Compile Include="Model\FtpFileItem.cs" />
+    <Compile Include="Model\TransferItem.cs" />
+    <Compile Include="Model\User.cs" />
+    <Compile Include="Authentication\UserManager.cs" />
     <Compile Include="Authentication\UserPermissions.cs" />
     <Compile Include="Constants\FtpConstants.cs" />
     <Compile Include="Protocol\Commands\Base\IFtpCommand.cs" />

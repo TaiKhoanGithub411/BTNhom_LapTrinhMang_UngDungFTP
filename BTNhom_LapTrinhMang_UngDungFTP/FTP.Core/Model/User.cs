@@ -1,7 +1,7 @@
 ﻿using System;
 using FTP.Core.Authentication;
 
-namespace FTP.Core.Model
+namespace FTP.Core.Models
 {
     public class User
     {

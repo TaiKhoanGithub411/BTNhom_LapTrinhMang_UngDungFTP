@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using FTP.Core.Authentication;
-namespace FTP.Core.Model
+using FTP.Core.Models;
+namespace FTP.Core.Authentication
 {
-    // Quản lý danh sách users và thao tác với user database.
     public class UserManager
     {
         private readonly string _usersFilePath;
