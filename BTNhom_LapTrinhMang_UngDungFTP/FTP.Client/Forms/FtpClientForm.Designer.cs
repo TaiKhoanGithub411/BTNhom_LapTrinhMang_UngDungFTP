@@ -40,7 +40,7 @@ namespace FTP.Client
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.button1 = new System.Windows.Forms.Button();
+            this.btnDowloadServer = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.btnDisconnect = new System.Windows.Forms.Button();
@@ -147,7 +147,7 @@ namespace FTP.Client
             // 
             this.groupBox3.Controls.Add(this.btnDeleteServer);
             this.groupBox3.Controls.Add(this.lvServerFiles);
-            this.groupBox3.Controls.Add(this.button1);
+            this.groupBox3.Controls.Add(this.btnDowloadServer);
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox3.Location = new System.Drawing.Point(0, 0);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -168,6 +168,7 @@ namespace FTP.Client
             this.btnDeleteServer.TabIndex = 12;
             this.btnDeleteServer.Text = "Delete Server";
             this.btnDeleteServer.UseVisualStyleBackColor = false;
+            this.btnDeleteServer.Click += new System.EventHandler(this.btnDeleteServer_Click);
             // 
             // lvServerFiles
             // 
@@ -201,16 +202,17 @@ namespace FTP.Client
             this.columnHeader3.Text = "Modified";
             this.columnHeader3.Width = 152;
             // 
-            // button1
+            // btnDowloadServer
             // 
-            this.button1.BackColor = System.Drawing.SystemColors.InactiveCaption;
-            this.button1.Location = new System.Drawing.Point(185, 324);
-            this.button1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(137, 38);
-            this.button1.TabIndex = 12;
-            this.button1.Text = "Connect";
-            this.button1.UseVisualStyleBackColor = false;
+            this.btnDowloadServer.BackColor = System.Drawing.SystemColors.InactiveCaption;
+            this.btnDowloadServer.Location = new System.Drawing.Point(185, 324);
+            this.btnDowloadServer.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.btnDowloadServer.Name = "btnDowloadServer";
+            this.btnDowloadServer.Size = new System.Drawing.Size(137, 38);
+            this.btnDowloadServer.TabIndex = 12;
+            this.btnDowloadServer.Text = "Dowload";
+            this.btnDowloadServer.UseVisualStyleBackColor = false;
+            this.btnDowloadServer.Click += new System.EventHandler(this.btnDowloadServer_Click);
             // 
             // splitContainer1
             // 
@@ -292,7 +294,7 @@ namespace FTP.Client
             this.txtPort.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtPort.Name = "txtPort";
             this.txtPort.Size = new System.Drawing.Size(220, 27);
-            this.txtPort.TabIndex = 6;
+            this.txtPort.TabIndex = 5;
             // 
             // txtUser
             // 
@@ -300,7 +302,7 @@ namespace FTP.Client
             this.txtUser.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.txtUser.Name = "txtUser";
             this.txtUser.Size = new System.Drawing.Size(225, 27);
-            this.txtUser.TabIndex = 5;
+            this.txtUser.TabIndex = 6;
             // 
             // txtHost
             // 
@@ -452,7 +454,7 @@ namespace FTP.Client
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.ColumnHeader columnHeader3;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btnDowloadServer;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button btnDisconnect;

@@ -29,6 +29,7 @@ namespace FTP.Client
         #region Connect
         private void btnConnect_Click(object sender, EventArgs e)
         {
+            txtPort.Text = "21";
             if (_isConnected)
             {
                 MessageBox.Show("Connecting... ");
@@ -382,7 +383,242 @@ namespace FTP.Client
             }
             return ""; // Trả về chuỗi rỗng nếu không tìm thấy
         }
-        #endregion
 
+        //Xác định là file hay folder
+        private bool IsDirectory(string listLine)
+        {
+            return listLine.StartsWith("d") || listLine.Contains("<DIR>");
+        }
+
+        //Lấy tên file
+        private string GetNameFromListLine(string listLine)
+        {
+            string[] parts = listLine.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            return parts[parts.Length - 1];
+        }
+
+        private bool DownloadFile(string remoteFile, string localFile)
+        {
+            try
+            {
+                // TYPE I
+                _writer.WriteLine("TYPE I");
+                string typeResp = _reader.ReadLine();
+                if (!typeResp.StartsWith("200")) return false;
+
+                // PASV
+                _writer.WriteLine("PASV");
+                string pasvResp = _reader.ReadLine();
+                if (!pasvResp.StartsWith("227")) return false;
+
+                int start = pasvResp.IndexOf('(');
+                int end = pasvResp.IndexOf(')');
+                string[] ipParts = pasvResp.Substring(start + 1, end - start - 1).Split(',');
+
+                string ip = $"{ipParts[0]}.{ipParts[1]}.{ipParts[2]}.{ipParts[3]}";
+                int port = int.Parse(ipParts[4]) * 256 + int.Parse(ipParts[5]);
+
+                TcpClient dataClient = new TcpClient();
+                dataClient.Connect(ip, port);
+
+                // RETR
+                _writer.WriteLine("RETR " + remoteFile);
+                string retrResp = _reader.ReadLine();
+                if (!retrResp.StartsWith("150"))
+                {
+                    dataClient.Close();
+                    return false;
+                }
+
+                // copy stream
+                using (NetworkStream dataStream = dataClient.GetStream())
+                using (FileStream fs = new FileStream(localFile, FileMode.Create))
+                {
+                    dataStream.CopyTo(fs);
+                }
+
+                dataClient.Close();
+
+                // Finish
+                _reader.ReadLine(); // 226
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        //Lấy file con trong folder
+        private List<string> ListDirectory()
+        {
+            List<string> lines = new List<string>();
+
+            _writer.WriteLine("PASV");
+            string pasvResp = _reader.ReadLine();
+
+            int start = pasvResp.IndexOf('(');
+            int end = pasvResp.IndexOf(')');
+            string[] ipParts = pasvResp.Substring(start + 1, end - start - 1).Split(',');
+
+            string ip = $"{ipParts[0]}.{ipParts[1]}.{ipParts[2]}.{ipParts[3]}";
+            int port = int.Parse(ipParts[4]) * 256 + int.Parse(ipParts[5]);
+
+            TcpClient dataClient = new TcpClient();
+            dataClient.Connect(ip, port);
+
+            _writer.WriteLine("LIST");
+            _reader.ReadLine(); // 150
+
+            using (StreamReader dr = new StreamReader(dataClient.GetStream()))
+            {
+                while (!dr.EndOfStream)
+                    lines.Add(dr.ReadLine());
+            }
+
+            dataClient.Close();
+            _reader.ReadLine(); // 226
+
+            return lines;
+        }
+
+        //Tải folder
+        private void DownloadFolder(string remoteFolder, string localFolder)
+        {
+            // tạo thư mục local
+            Directory.CreateDirectory(localFolder);
+
+            // vào thư mục trên server
+            _writer.WriteLine("CWD " + remoteFolder);
+            _reader.ReadLine(); // 250
+
+            // lấy danh sách bên trong
+            var items = ListDirectory();
+
+            foreach (string line in items)
+            {
+                string name = GetNameFromListLine(line);
+
+                if (IsDirectory(line))
+                {
+                    DownloadFolder(name, Path.Combine(localFolder, name)); // đệ quy
+                }
+                else
+                {
+                    DownloadFile(name, Path.Combine(localFolder, name));
+                }
+            }
+
+            // quay lại thư mục trước đó
+            _writer.WriteLine("CDUP");
+            _reader.ReadLine();
+        }
+
+        //Hảm tải tự động nếu là file thì tải file, còn nếu là thư mục thì tải toàn bộ
+        private void DownloadPath(string listLine, string saveTo)
+        {
+            string name = GetNameFromListLine(listLine);
+
+            if (IsDirectory(listLine))
+            {
+                DownloadFolder(name, saveTo);
+                MessageBox.Show("Download thư mục hoàn tất!");
+            }
+            else
+            {
+                DownloadFile(name, saveTo);
+                MessageBox.Show("Download file hoàn tất!");
+            }
+        }
+
+        private void btnDowloadServer_Click(object sender, EventArgs e)
+        {
+            string listLine = lvServerFiles.SelectedItems[0].Text;
+            string name = GetNameFromListLine(listLine);
+
+            FolderBrowserDialog dlg = new FolderBrowserDialog();
+            dlg.Description = "Chọn nơi lưu (chỉ trong ổ C)";
+
+            if (dlg.ShowDialog() != DialogResult.OK)
+                return;
+
+            string selectedPath = dlg.SelectedPath;
+
+            if (selectedPath.Length < 2 || selectedPath[1] != ':' ||
+             !char.ToUpper(selectedPath[0]).Equals('C'))
+            {
+                MessageBox.Show("Bạn phải chọn thư mục trong ổ C!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return; // dừng tải
+            }
+
+            string savePath = Path.Combine(selectedPath, name);
+            DownloadPath(listLine, savePath);
+        }
+
+        // Hàm hiện hộp thoại xác nhận
+        private bool ConfirmDelete(string name, bool isDirectory)
+        {
+            string type = isDirectory ? "thư mục" : "file";
+            DialogResult confirm = MessageBox.Show(
+                $"Bạn có chắc chắn muốn xóa {type} '{name}'?",
+                "Xác nhận xóa",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning);
+
+            return confirm == DialogResult.Yes;
+        }
+
+        // Hàm gửi lệnh xóa lên server FTP
+        private void DeleteServerItem(string name, bool isDirectory)
+        {
+            try
+            {
+                string command = isDirectory ? $"RMD {name}" : $"DELE {name}";
+                _writer.WriteLine(command);
+
+                string response = _reader.ReadLine();
+
+                if (response.StartsWith("250"))
+                {
+                    MessageBox.Show($"{(isDirectory ? "Thư mục" : "File")} '{name}' đã được xóa thành công.");
+                    LoadServerFiles(); // tải lại danh sách để cập nhật
+                }
+                else
+                {
+                    MessageBox.Show($"Xóa thất bại: {response}");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi xóa: " + ex.Message);
+            }
+        }
+        
+
+        private void btnDeleteServer_Click(object sender, EventArgs e)
+        {
+            if (!_isConnected)
+            {
+                MessageBox.Show("Chưa kết nối tới server.");
+                return;
+            }
+
+            if (lvServerFiles.SelectedItems.Count == 0)
+            {
+                MessageBox.Show("Bạn chưa chọn file hoặc thư mục để xóa.");
+                return;
+            }
+
+            string listLine = lvServerFiles.SelectedItems[0].Text;
+            string name = GetNameFromListLine(listLine);
+            bool isDir = IsDirectory(listLine);
+
+            if (!ConfirmDelete(name, isDir))
+                return;
+
+            DeleteServerItem(name, isDir);
+        }
+        #endregion
     }
 }
