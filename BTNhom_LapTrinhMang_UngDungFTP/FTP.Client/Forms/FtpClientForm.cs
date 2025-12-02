@@ -303,12 +303,26 @@ namespace FTP.Client
             {
                 lvServerFiles.Items.Clear();
 
-                // 1. Yêu cầu PASV
-                _writer.WriteLine("PASV");
-                string pasvResponse = _reader.ReadLine();
+                // 1. Yêu cầu PASV
+                _writer.WriteLine("PASV");
 
-                int start = pasvResponse.IndexOf('(');
+                // *** DÒNG CODE ĐÃ SỬA ***
+                string pasvResponse = ReadExpectedResponse("227");
+
+                if (!pasvResponse.StartsWith("227"))
+                {
+                    throw new Exception("Không nhận được phản hồi 227 cho lệnh PASV khi tải file.");
+                }
+                // *** KẾT THÚC DÒNG CODE ĐÃ SỬA ***
+
+                int start = pasvResponse.IndexOf('(');
                 int end = pasvResponse.IndexOf(')');
+                // Thêm kiểm tra lỗi (start == -1 || end == -1) để chắc chắn hơn
+                if (start == -1 || end == -1)
+                {
+                    throw new Exception("Phản hồi PASV không hợp lệ.");
+                }
+
                 string[] parts = pasvResponse.Substring(start + 1, end - start - 1).Split(',');
 
                 string ip = $"{parts[0]}.{parts[1]}.{parts[2]}.{parts[3]}";
@@ -317,8 +331,17 @@ namespace FTP.Client
                 TcpClient dataClient = new TcpClient();
                 dataClient.Connect(ip, port);
 
-                // 2. Gửi LIST
-                _writer.WriteLine("LIST");
+                // 2. Gửi LIST
+                _writer.WriteLine("LIST");
+
+                // Cần đọc phản hồi 150 trước khi đọc Data Stream
+                string listResponse = _reader.ReadLine();
+                if (!listResponse.StartsWith("150"))
+                {
+                    dataClient.Close();
+                    throw new Exception("Không thể bắt đầu LIST: " + listResponse);
+                }
+
 
                 using (NetworkStream dataStream = dataClient.GetStream())
                 using (StreamReader dataReader = new StreamReader(dataStream))
@@ -332,13 +355,17 @@ namespace FTP.Client
                 }
 
                 dataClient.Close();
-                _reader.ReadLine(); // 226 Transfer complete
-            }
+
+                // *** CẦN ĐỌC PHẢN HỒI 226 CHẮC CHẮN HƠN ***
+                ReadExpectedResponse("226"); // 226 Transfer complete (Dùng hàm mới để đọc)
+            }
             catch (Exception ex)
             {
                 MessageBox.Show("Lỗi load file server: " + ex.Message);
             }
         }
+
+
         // Thêm phương thức này vào cuối file FtpClientForm.cs, trước dấu đóng } của class
         private string ReadExpectedResponse(string expectedCode)
         {
