@@ -347,31 +347,27 @@ namespace FTP.Server
         }
         private string GetUsersFilePath()
         {
-            // Lấy thư mục chứa executable (bin\Debug hoặc bin\Release)
+            // Thư mục chạy (bin\Debug hoặc bin\Release)
             string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
-            // Tạo thư mục Data nếu chưa tồn tại
-            string dataFolder = Path.Combine(baseDirectory, "Data");
+            // Đi lên 2 cấp: bin\Debug -> project folder
+            string projectRoot = Path.GetFullPath(
+                Path.Combine(baseDirectory, @"..\..")
+            );
 
+            // Thư mục Data nằm trong project
+            string dataFolder = Path.Combine(projectRoot, "Data");
+
+            // Đảm bảo thư mục Data tồn tại (cho chắc)
             if (!Directory.Exists(dataFolder))
             {
-                try
-                {
-                    Directory.CreateDirectory(dataFolder);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Failed to create Data folder: {ex.Message}",
-                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                    // Fallback: Dùng thư mục gốc
-                    return Path.Combine(baseDirectory, "users.json");
-                }
+                Directory.CreateDirectory(dataFolder);
             }
 
-            // Trả về đường dẫn đầy đủ tới users.json
+            // Trả về đường dẫn tới Data\users.json trong project
             return Path.Combine(dataFolder, "users.json");
         }
+
         private string GetConfigFilePath()
         {
             string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;

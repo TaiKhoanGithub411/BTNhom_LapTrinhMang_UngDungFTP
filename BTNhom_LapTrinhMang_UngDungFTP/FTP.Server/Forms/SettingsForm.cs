@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using FTP.Core.Server;
+using FTP.Core.Models;
 using FTP.Core.Authentication;
 using System.IO;
 using System.Net;

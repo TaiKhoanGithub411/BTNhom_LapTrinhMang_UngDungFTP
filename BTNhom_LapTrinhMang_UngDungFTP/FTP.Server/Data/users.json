@@ -1,13 +1,24 @@
-﻿[
+[
   {
-    "Username": "admin",
-    "PasswordHash": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918", //password: admin
-    "Permissions": 63, //có đầy đủ quyền
+    "UserName": "admin",
+    "PasswordHash": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
+    "Permissions": 31,
     "HomeDirectory": "C:\\FTPRoot",
     "QuotaBytes": -1,
     "UsedBytes": 0,
     "IsDisabled": false,
-    "CreatedAt": "2025-11-20T10:00:00.000000",
-    "LastLogin": null
+    "CreatedAt": "2025-11-27T00:04:15.021436+07:00",
+    "LastLogin": "2025-12-02T14:32:54.8816262+07:00"
   },
+  {
+    "UserName": "user",
+    "PasswordHash": "04f8996da763b7a969b1028ee3007569eaf3a635486ddab211d512c85b9df8fb",
+    "Permissions": 31,
+    "HomeDirectory": "D:\\Trang\\FTPRoot",
+    "QuotaBytes": -1,
+    "UsedBytes": 0,
+    "IsDisabled": false,
+    "CreatedAt": "2025-11-27T00:05:02.1905151+07:00",
+    "LastLogin": null
+  }
 ]
