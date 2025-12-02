@@ -8,17 +8,17 @@
     "UsedBytes": 0,
     "IsDisabled": false,
     "CreatedAt": "2025-11-27T00:04:15.021436+07:00",
-    "LastLogin": "2025-12-02T14:32:54.8816262+07:00"
+    "LastLogin": "2025-12-02T15:47:05.1728474+07:00"
   },
   {
     "UserName": "user",
     "PasswordHash": "04f8996da763b7a969b1028ee3007569eaf3a635486ddab211d512c85b9df8fb",
-    "Permissions": 31,
+    "Permissions": 1,
     "HomeDirectory": "D:\\Trang\\FTPRoot",
     "QuotaBytes": -1,
     "UsedBytes": 0,
     "IsDisabled": false,
     "CreatedAt": "2025-11-27T00:05:02.1905151+07:00",
-    "LastLogin": null
+    "LastLogin": "2025-12-02T14:54:15.0375373+07:00"
   }
 ]

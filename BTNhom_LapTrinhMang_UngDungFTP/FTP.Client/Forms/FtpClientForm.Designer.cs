@@ -119,6 +119,7 @@ namespace FTP.Client
             this.btnDeleteLocal.TabIndex = 11;
             this.btnDeleteLocal.Text = "Delete Local";
             this.btnDeleteLocal.UseVisualStyleBackColor = false;
+            this.btnDeleteLocal.Click += new System.EventHandler(this.btnDeleteLocal_Click);
             // 
             // btnUpload
             // 
@@ -130,6 +131,7 @@ namespace FTP.Client
             this.btnUpload.TabIndex = 10;
             this.btnUpload.Text = "Upload";
             this.btnUpload.UseVisualStyleBackColor = false;
+            this.btnUpload.Click += new System.EventHandler(this.btnUpload_Click);
             // 
             // tvLocalFiles
             // 
@@ -139,6 +141,7 @@ namespace FTP.Client
             this.tvLocalFiles.Name = "tvLocalFiles";
             this.tvLocalFiles.Size = new System.Drawing.Size(467, 282);
             this.tvLocalFiles.TabIndex = 0;
+            this.tvLocalFiles.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.tvLocalFiles_BeforeExpand);
             // 
             // groupBox3
             // 
