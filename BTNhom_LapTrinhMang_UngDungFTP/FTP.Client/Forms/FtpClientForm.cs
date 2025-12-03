@@ -347,18 +347,26 @@ namespace FTP.Client
                 using (NetworkStream dataStream = dataClient.GetStream())
                 using (StreamReader dataReader = new StreamReader(dataStream))
                 {
+
                     string line;
                     while ((line = dataReader.ReadLine()) != null)
                     {
-                        ListViewItem item = new ListViewItem(line);
+                        string[] part = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                        if (part.Length < 8) continue;
+                        string fileName = part[8];
+                        string fileSize = part[4];
+                        string fileModified = $"{part[5]} {part[6]} {part[7]}";
+                        ListViewItem item = new ListViewItem(fileName);
+                        item.SubItems.Add(fileSize);      
+                        item.SubItems.Add(fileModified);  
+
                         lvServerFiles.Items.Add(item);
                     }
                 }
 
                 dataClient.Close();
 
-                // *** CẦN ĐỌC PHẢN HỒI 226 CHẮC CHẮN HƠN ***
-                ReadExpectedResponse("226"); // 226 Transfer complete (Dùng hàm mới để đọc)
+                ReadExpectedResponse("226"); 
             }
             catch (Exception ex)
             {
@@ -367,30 +375,24 @@ namespace FTP.Client
         }
 
 
-        // Thêm phương thức này vào cuối file FtpClientForm.cs, trước dấu đóng } của class
         private string ReadExpectedResponse(string expectedCode)
         {
             string line;
-            // Đọc tất cả các dòng cho đến khi tìm thấy dòng bắt đầu bằng mã trạng thái mong muốn
             while ((line = _reader.ReadLine()) != null)
             {
-                // Phản hồi FTP nhiều dòng có thể sử dụng dấu '-' sau mã code (ví dụ: 227-)
-                // hoặc kết thúc bằng dấu cách (ví dụ: 227 )
                 if (line.StartsWith(expectedCode + " ") || line.StartsWith(expectedCode + "-"))
                 {
                     return line;
                 }
             }
-            return ""; // Trả về chuỗi rỗng nếu không tìm thấy
+            return ""; 
         }
 
-        //Xác định là file hay folder
         private bool IsDirectory(string listLine)
         {
             return listLine.StartsWith("d") || listLine.Contains("<DIR>");
         }
 
-        //Lấy tên file
         private string GetNameFromListLine(string listLine)
         {
             string[] parts = listLine.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -538,19 +540,19 @@ namespace FTP.Client
             string name = GetNameFromListLine(listLine);
 
             FolderBrowserDialog dlg = new FolderBrowserDialog();
-            dlg.Description = "Chọn nơi lưu (chỉ trong ổ C)";
+            dlg.Description = "Chọn nơi lưu file";
 
             if (dlg.ShowDialog() != DialogResult.OK)
                 return;
 
             string selectedPath = dlg.SelectedPath;
 
-            if (selectedPath.Length < 2 || selectedPath[1] != ':' ||
+           /* if (selectedPath.Length < 2 || selectedPath[1] != ':' ||
              !char.ToUpper(selectedPath[0]).Equals('C'))
             {
                 MessageBox.Show("Bạn phải chọn thư mục trong ổ C!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return; // dừng tải
-            }
+            }*/
 
             string savePath = Path.Combine(selectedPath, name);
             DownloadPath(listLine, savePath);

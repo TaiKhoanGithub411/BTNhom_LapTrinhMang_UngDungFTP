@@ -57,7 +57,6 @@ namespace FTP.Client
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.lblTrasferStatus = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.pbTrasfer = new System.Windows.Forms.ProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
             this.splitContainer3.Panel1.SuspendLayout();
             this.splitContainer3.Panel2.SuspendLayout();
@@ -90,7 +89,7 @@ namespace FTP.Client
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add(this.groupBox3);
-            this.splitContainer3.Size = new System.Drawing.Size(995, 388);
+            this.splitContainer3.Size = new System.Drawing.Size(995, 374);
             this.splitContainer3.SplitterDistance = 473;
             this.splitContainer3.TabIndex = 3;
             // 
@@ -104,7 +103,7 @@ namespace FTP.Client
             this.groupBox2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.groupBox2.Size = new System.Drawing.Size(473, 388);
+            this.groupBox2.Size = new System.Drawing.Size(473, 374);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Local File";
@@ -153,7 +152,7 @@ namespace FTP.Client
             this.groupBox3.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.groupBox3.Size = new System.Drawing.Size(518, 388);
+            this.groupBox3.Size = new System.Drawing.Size(518, 374);
             this.groupBox3.TabIndex = 2;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Server File";
@@ -166,7 +165,7 @@ namespace FTP.Client
             this.btnDeleteServer.Name = "btnDeleteServer";
             this.btnDeleteServer.Size = new System.Drawing.Size(137, 38);
             this.btnDeleteServer.TabIndex = 12;
-            this.btnDeleteServer.Text = "Delete Server";
+            this.btnDeleteServer.Text = "Delete";
             this.btnDeleteServer.UseVisualStyleBackColor = false;
             this.btnDeleteServer.Click += new System.EventHandler(this.btnDeleteServer_Click);
             // 
@@ -229,8 +228,8 @@ namespace FTP.Client
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(995, 794);
-            this.splitContainer1.SplitterDistance = 230;
+            this.splitContainer1.Size = new System.Drawing.Size(995, 739);
+            this.splitContainer1.SplitterDistance = 241;
             this.splitContainer1.SplitterWidth = 6;
             this.splitContainer1.TabIndex = 5;
             // 
@@ -251,7 +250,7 @@ namespace FTP.Client
             this.groupBox1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.groupBox1.Size = new System.Drawing.Size(995, 230);
+            this.groupBox1.Size = new System.Drawing.Size(995, 241);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Connection Detail";
@@ -363,8 +362,8 @@ namespace FTP.Client
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.groupBox4);
-            this.splitContainer2.Size = new System.Drawing.Size(995, 558);
-            this.splitContainer2.SplitterDistance = 388;
+            this.splitContainer2.Size = new System.Drawing.Size(995, 492);
+            this.splitContainer2.SplitterDistance = 374;
             this.splitContainer2.SplitterWidth = 6;
             this.splitContainer2.TabIndex = 4;
             // 
@@ -372,13 +371,12 @@ namespace FTP.Client
             // 
             this.groupBox4.Controls.Add(this.lblTrasferStatus);
             this.groupBox4.Controls.Add(this.label5);
-            this.groupBox4.Controls.Add(this.pbTrasfer);
             this.groupBox4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox4.Location = new System.Drawing.Point(0, 0);
             this.groupBox4.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.groupBox4.Size = new System.Drawing.Size(995, 164);
+            this.groupBox4.Size = new System.Drawing.Size(995, 112);
             this.groupBox4.TabIndex = 3;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Trasfer Queue";
@@ -386,7 +384,7 @@ namespace FTP.Client
             // lblTrasferStatus
             // 
             this.lblTrasferStatus.AutoSize = true;
-            this.lblTrasferStatus.Location = new System.Drawing.Point(97, 98);
+            this.lblTrasferStatus.Location = new System.Drawing.Point(100, 56);
             this.lblTrasferStatus.Name = "lblTrasferStatus";
             this.lblTrasferStatus.Size = new System.Drawing.Size(18, 22);
             this.lblTrasferStatus.TabIndex = 11;
@@ -395,25 +393,17 @@ namespace FTP.Client
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(32, 98);
+            this.label5.Location = new System.Drawing.Point(35, 56);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(56, 22);
             this.label5.TabIndex = 10;
             this.label5.Text = "Status :";
             // 
-            // pbTrasfer
-            // 
-            this.pbTrasfer.Location = new System.Drawing.Point(35, 41);
-            this.pbTrasfer.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.pbTrasfer.Name = "pbTrasfer";
-            this.pbTrasfer.Size = new System.Drawing.Size(100, 32);
-            this.pbTrasfer.TabIndex = 0;
-            // 
             // FtpClientForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 22F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(995, 794);
+            this.ClientSize = new System.Drawing.Size(995, 739);
             this.Controls.Add(this.splitContainer1);
             this.Font = new System.Drawing.Font("Arial Narrow", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -471,7 +461,6 @@ namespace FTP.Client
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.Label lblTrasferStatus;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.ProgressBar pbTrasfer;
     }
 }
 
