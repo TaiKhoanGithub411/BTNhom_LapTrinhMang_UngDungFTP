@@ -217,11 +217,21 @@ namespace FTP.Client
                 return;
             }
 
-            // MessageBox.Show("Sẵn sàng upload file:\n" + localPath); // Có thể bỏ dòng này
 
-            // Bắt đầu quá trình upload
             try
             {
+                _writer.WriteLine("CWD /"); // Gửi lệnh CWD để chuyển đến thư mục gốc
+                string cwdResponse = _reader.ReadLine();
+
+                // Kiểm tra phản hồi CWD (thường là 250)
+                if (!cwdResponse.StartsWith("250"))
+                {
+                    // Nếu không thể chuyển về thư mục gốc, báo lỗi và dừng upload
+                    MessageBox.Show($"Lỗi: Không thể chuyển về thư mục gốc: {cwdResponse}", "Lỗi CWD");
+                    return;
+                }
+
+                lblTrasferStatus.Text = "Chuyển về thư mục gốc thành công. Bắt đầu upload...";
                 // 1. Yêu cầu PASV (Passive Mode)
                 _writer.WriteLine("PASV");
 
@@ -347,21 +357,30 @@ namespace FTP.Client
                 using (NetworkStream dataStream = dataClient.GetStream())
                 using (StreamReader dataReader = new StreamReader(dataStream))
                 {
-
                     string line;
                     while ((line = dataReader.ReadLine()) != null)
                     {
+                        // giữ nguyên dòng LIST gốc để kiểm tra type later
+                        string rawLine = line;
+
+                        // tách từng phần (nghĩa là giống format UNIX ls -l)
                         string[] part = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                         if (part.Length < 8) continue;
-                        string fileName = part[8];
+
+                        string fileName = part[part.Length - 1];
                         string fileSize = part[4];
                         string fileModified = $"{part[5]} {part[6]} {part[7]}";
+
                         ListViewItem item = new ListViewItem(fileName);
-                        item.SubItems.Add(fileSize);      
-                        item.SubItems.Add(fileModified);  
+                        item.SubItems.Add(fileSize);
+                        item.SubItems.Add(fileModified);
+
+                        // LƯU DÒNG GỐC vào Tag để sau này kiểm tra có phải folder không
+                        item.Tag = rawLine;
 
                         lvServerFiles.Items.Add(item);
                     }
+
                 }
 
                 dataClient.Close();
@@ -612,15 +631,79 @@ namespace FTP.Client
                 return;
             }
 
-            string listLine = lvServerFiles.SelectedItems[0].Text;
-            string name = GetNameFromListLine(listLine);
+            
+            string listLine = lvServerFiles.SelectedItems[0].Tag?.ToString() ?? lvServerFiles.SelectedItems[0].Text;
+            string name = lvServerFiles.SelectedItems[0].Text;
             bool isDir = IsDirectory(listLine);
 
             if (!ConfirmDelete(name, isDir))
                 return;
 
             DeleteServerItem(name, isDir);
+
         }
         #endregion
+
+        #region Create
+        private void CreateServerDirectory(string folderName)
+        {
+            if (string.IsNullOrWhiteSpace(folderName))
+            {
+                MessageBox.Show("Tên thư mục không được để trống.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            try
+            {
+                // Gửi lệnh MKD
+                _writer.WriteLine($"MKD {folderName}");
+                lblTrasferStatus.Text = $"Creating directory: {folderName}";
+
+                // Đọc phản hồi từ server
+                string response = _reader.ReadLine();
+
+                if (response.StartsWith("257"))
+                {
+                    MessageBox.Show($"Thư mục '{folderName}' đã được tạo thành công.", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LoadServerFiles(); // Tải lại danh sách để hiển thị thư mục mới
+                    lblTrasferStatus.Text = $"Directory created: {folderName}";
+                }
+                else
+                {
+                    MessageBox.Show($"Tạo thư mục thất bại: {response}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    lblTrasferStatus.Text = $"Failed to create directory: {folderName}";
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi tạo thư mục: " + ex.Message, "Lỗi kết nối", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                lblTrasferStatus.Text = "Connection error during directory creation.";
+            }
+        }
+
+
+
+
+        #endregion
+
+        private void btnCreate_Click(object sender, EventArgs e)
+        {
+            if (!_isConnected)
+            {
+                MessageBox.Show("Chưa kết nối tới server.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Mở hộp thoại để người dùng nhập tên thư mục
+            string newFolderName = Microsoft.VisualBasic.Interaction.InputBox(
+                "Nhập tên thư mục mới:", 
+                "Tạo thư mục trên Server", 
+                "New Folder");
+            
+            if (!string.IsNullOrWhiteSpace(newFolderName))
+            {
+                CreateServerDirectory(newFolderName);
+            }
+        }
     }
 }

@@ -57,6 +57,7 @@ namespace FTP.Client
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.lblTrasferStatus = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
+            this.btnCreateDir = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
             this.splitContainer3.Panel1.SuspendLayout();
             this.splitContainer3.Panel2.SuspendLayout();
@@ -144,6 +145,7 @@ namespace FTP.Client
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.btnCreateDir);
             this.groupBox3.Controls.Add(this.btnDeleteServer);
             this.groupBox3.Controls.Add(this.lvServerFiles);
             this.groupBox3.Controls.Add(this.btnDowloadServer);
@@ -176,6 +178,7 @@ namespace FTP.Client
             this.columnHeader2,
             this.columnHeader3});
             this.lvServerFiles.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lvServerFiles.FullRowSelect = true;
             this.lvServerFiles.GridLines = true;
             this.lvServerFiles.HideSelection = false;
             this.lvServerFiles.Location = new System.Drawing.Point(3, 24);
@@ -229,7 +232,7 @@ namespace FTP.Client
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
             this.splitContainer1.Size = new System.Drawing.Size(995, 739);
-            this.splitContainer1.SplitterDistance = 241;
+            this.splitContainer1.SplitterDistance = 240;
             this.splitContainer1.SplitterWidth = 6;
             this.splitContainer1.TabIndex = 5;
             // 
@@ -250,7 +253,7 @@ namespace FTP.Client
             this.groupBox1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.groupBox1.Size = new System.Drawing.Size(995, 241);
+            this.groupBox1.Size = new System.Drawing.Size(995, 240);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Connection Detail";
@@ -362,7 +365,7 @@ namespace FTP.Client
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.groupBox4);
-            this.splitContainer2.Size = new System.Drawing.Size(995, 492);
+            this.splitContainer2.Size = new System.Drawing.Size(995, 493);
             this.splitContainer2.SplitterDistance = 374;
             this.splitContainer2.SplitterWidth = 6;
             this.splitContainer2.TabIndex = 4;
@@ -376,7 +379,7 @@ namespace FTP.Client
             this.groupBox4.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.groupBox4.Size = new System.Drawing.Size(995, 112);
+            this.groupBox4.Size = new System.Drawing.Size(995, 113);
             this.groupBox4.TabIndex = 3;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Trasfer Queue";
@@ -398,6 +401,18 @@ namespace FTP.Client
             this.label5.Size = new System.Drawing.Size(56, 22);
             this.label5.TabIndex = 10;
             this.label5.Text = "Status :";
+            // 
+            // btnCreateDir
+            // 
+            this.btnCreateDir.BackColor = System.Drawing.SystemColors.InactiveCaption;
+            this.btnCreateDir.Location = new System.Drawing.Point(42, 324);
+            this.btnCreateDir.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.btnCreateDir.Name = "btnCreateDir";
+            this.btnCreateDir.Size = new System.Drawing.Size(137, 38);
+            this.btnCreateDir.TabIndex = 14;
+            this.btnCreateDir.Text = "Create Dir";
+            this.btnCreateDir.UseVisualStyleBackColor = false;
+            this.btnCreateDir.Click += new System.EventHandler(this.btnCreate_Click);
             // 
             // FtpClientForm
             // 
@@ -461,6 +476,7 @@ namespace FTP.Client
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.Label lblTrasferStatus;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Button btnCreateDir;
     }
 }
 
